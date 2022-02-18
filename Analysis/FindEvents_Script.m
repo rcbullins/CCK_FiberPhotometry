@@ -1,4 +1,4 @@
-%Find Events Script
+function [] = FindEvents_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER)
 % PURPOSE
 %     Find calcium recording events from threshold set for each animal
 %     given by the 3 x the std deviation (output from stdDev_Script). Save
@@ -33,13 +33,6 @@
 %   Run First: Preprocessing, Filtering, Get Std Dev
 % HISTORY
 %   2.3.2022 Reagan Bullins
-clear;
-clc;
-%% Set conditions
-MODELS           = {'CCK','CCKAD'}; %WT and AD models
-EXPER_CONDITIONS = {'baseline','CNO'};
-INDICATOR_FOLDER = 'hM3D_DioGC\'; %L_hM3D_DioGC_R_hM3D_GFAPGC
-MONTHS           = {'3mon'};
 %% Set Paths
 BASEPATH = 'C:\Users\rcbul\OneDrive - University of North Carolina at Chapel Hill\Song_Lab\';
 CODE_REAGAN = [BASEPATH 'Code\'];
@@ -57,9 +50,21 @@ SetGraphDefaults;
 %% Get std dev for each animal
 % GetStdDev_Script;
 %%
-
 for imonth = 1:length(MONTHS)
     thisMonth = MONTHS{imonth};
+    % Initiate a CSV file title (if csv file exists, delete it)
+    TABLE = [ANALYZED_DATA 'hm3D_DioGC/' thisMonth '/summarySheet_' thisMonth '.csv'];
+    
+    if exist(TABLE,'file')==2
+        delete(TABLE);
+    end
+    % Open the CSV file
+    csvFile = fopen(TABLE,'w');
+    % Make labels on columns: Subject, sustained, selective, accuracy, and
+    % reaction time
+    fprintf(csvFile,'Animal,Mean_C1, Mean_C2, SD_C1, SD_C2, Small_Event_Freq_C1, Small_Event_Freq_C2, Large_Event_Freq_C1, Large_Event_Freq_C2\n');
+    
+    
     % Loop through each condition
     for icondition = 1:length(EXPER_CONDITIONS)
         thisExperCondition = EXPER_CONDITIONS{icondition};
@@ -81,7 +86,7 @@ for imonth = 1:length(MONTHS)
             groupEvents.ct       = zeros(1,2*length(SESSIONS));
             groupEvents.auc      = zeros(1,2*length(SESSIONS));
             groupEvents.amp      = {};
-                        
+            
             %make structs to store all data in for each channel - small
             %events
             smallGroupEvents.timeFreq = zeros(1,2*length(SESSIONS));
@@ -101,7 +106,7 @@ for imonth = 1:length(MONTHS)
                 % thresholding data (std dev)
                 animal_info = thisSession(length(thisExperCondition)+2:end-13);
                 stdDev_file = sprintf('%s_stdDev.mat',animal_info);
-                load(stdDev_file,'stdDev','dataMean');
+                load(stdDev_file,'stdDev','dataMean','concat_data');
                 %% Find events over a threshold value of 3 std from mean  (over butterworth filtered data)
                 thr.chan1 = 3*stdDev.chan1;
                 thr.chan2 = 3*stdDev.chan2;
@@ -115,14 +120,14 @@ for imonth = 1:length(MONTHS)
                 thr_small.chan2 = 1*stdDev.chan1;
                 
                 smallEvents.chan1_idx = find(ca_data.chan1_filt >= (dataMean.chan1+thr_small.chan1)...
-                                           & ca_data.chan1_filt < (dataMean.chan1+thr.chan1));
+                    & ca_data.chan1_filt < (dataMean.chan1+thr.chan1));
                 smallEvents.chan1_values = ca_data.chan1_filt(smallEvents.chan1_idx);
                 smallEvents.chan2_idx = find(ca_data.chan2_filt >= (dataMean.chan2+thr_small.chan1)...
-                                           & ca_data.chan2_filt < (dataMean.chan2+thr.chan2));
+                    & ca_data.chan2_filt < (dataMean.chan2+thr.chan2));
                 smallEvents.chan2_values = ca_data.chan2_filt(smallEvents.chan2_idx);
                 %% Test plot large events
                 figure;
-                sgtitle([thisMonth ': ' thisExperCondition ' & ' thisModel ' (' strrep(thisSession,'_',' ') ')']);
+                sgtitle(['Large Events -' thisMonth ': ' thisExperCondition ' & ' thisModel ' (' strrep(thisSession,'_',' ') ')']);
                 % for channel 1
                 subplot(2,1,1);
                 plot(ca_data.time, ca_data.chan1_filt','b');
@@ -185,8 +190,8 @@ for imonth = 1:length(MONTHS)
                 eventChrts.chan2_auc = sum(eventChrts.chan2_amp);
                 %% Small Event Characterisitcs - Count, Freq Time, Freq Sampled Points, Amplitude, Area under curve
                 % number of events
-                smallEventChrts.chan1_ct = length(events.chan1_idx);
-                smallEventChrts.chan2_ct = length(events.chan2_idx);
+                smallEventChrts.chan1_ct = length(smallEvents.chan1_idx);
+                smallEventChrts.chan2_ct = length(smallEvents.chan2_idx);
                 % frequency of events (divide by amount of seconds) (time
                 % in ms --> sec)
                 smallEventChrts.chan1_timefreq = smallEventChrts.chan1_ct/(ca_data.time(end)/1000);
@@ -195,8 +200,8 @@ for imonth = 1:length(MONTHS)
                 smallEventChrts.chan1_ptfreq = smallEventChrts.chan1_ct/length(ca_data.time);
                 smallEventChrts.chan2_ptfreq = smallEventChrts.chan2_ct/length(ca_data.time);
                 % amplitude of events
-                smallEventChrts.chan1_amp = events.chan1_values;
-                smallEventChrts.chan2_amp = events.chan2_values;
+                smallEventChrts.chan1_amp = smallEvents.chan1_values;
+                smallEventChrts.chan2_amp = smallEvents.chan2_values;
                 % under the curve (add all amplitude values)
                 smallEventChrts.chan1_auc = sum(smallEventChrts.chan1_amp);
                 smallEventChrts.chan2_auc = sum(smallEventChrts.chan2_amp);
@@ -217,7 +222,7 @@ for imonth = 1:length(MONTHS)
                 groupEvents(isession+counter+1).ct       = eventChrts.chan2_ct;
                 groupEvents(isession+counter+1).auc      = eventChrts.chan2_auc;
                 groupEvents(isession+counter+1).amp      = eventChrts.chan2_amp;
-       
+                
                 %% Make group characteristics for small events
                 %group chan 1 and chan2 in different vectors, but same
                 %struct
@@ -234,9 +239,35 @@ for imonth = 1:length(MONTHS)
                 smallGroupEvents(isession+counter+1).auc      = smallEventChrts.chan2_auc;
                 smallGroupEvents(isession+counter+1).amp      = smallEventChrts.chan2_amp;
                 counter = counter +1;
+                %% Write to excel sheet for easy access
+                if strcmp(thisExperCondition, 'baseline')
+                    excel_cond = 'BL';
+                else
+                    excel_cond = 'CNO';
+                end
+                animal_info_excel = [animal_info '_' excel_cond];
+                
+%                 animal_info_excel = {animal_info_excel};
+                Mean_C1 = dataMean.chan1;
+                Mean_C2 = dataMean.chan2;
+                SD_C1 = stdDev.chan1;
+                SD_C2 = stdDev.chan2;
+                Small_Event_Freq_C2 = smallEventChrts.chan2_timefreq;
+                Small_Event_Freq_C1 = smallEventChrts.chan1_timefreq;
+                Large_Event_Freq_C2 = eventChrts.chan2_timefreq;
+                Large_Event_Freq_C1 = eventChrts.chan1_timefreq;
+                % make table
+                fprintf(csvFile,'%s,%0.5f,%0.5f,%0.5f,%0.5f,%0.5f,%0.5f,%0.5f,%0.5f\n',...
+                    animal_info_excel,Mean_C1, Mean_C2, SD_C1, SD_C2,Small_Event_Freq_C1,...
+                    Small_Event_Freq_C2, Large_Event_Freq_C1, Large_Event_Freq_C2);
+                
             end %session
-                save([ANALYZED_DATA INDICATOR_FOLDER thisMonth '\Events\' thisExperCondition '_' thisModel '_groupEvents.mat'],'groupEvents','smallGroupEvents');
-                clear groupEvents smallGroupEvents;
+            save([ANALYZED_DATA INDICATOR_FOLDER thisMonth '\Events\' thisExperCondition '_' thisModel '_groupEvents.mat'],'groupEvents','smallGroupEvents');
+            clear groupEvents smallGroupEvents;
         end %model
     end %exper condition
+    % close excel file
+    fclose(csvFile);
 end %month
+
+end

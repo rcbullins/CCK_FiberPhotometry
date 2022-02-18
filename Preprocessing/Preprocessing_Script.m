@@ -1,4 +1,4 @@
-%% Preprocessing Script
+function [] = Preprocessing_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER)
 % PURPOSE
 %     Preprocess calcium recording from CCK interneurons in dentate gyrus of
 %     hippocampus. Load in raw data and save in mat structs for easy access
@@ -39,8 +39,6 @@
 %   - if add in GFAP (for astrocytes) will have to change the indicator folder
 %   - currently assumes there is only one data file when you get to
 %   CCK_animal number directory
-clear;
-clc;
 %% Set Paths
 BASEPATH = 'C:\Users\rcbul\OneDrive - University of North Carolina at Chapel Hill\Song_Lab\';
 CODE_REAGAN = [BASEPATH 'Code\'];
@@ -53,23 +51,17 @@ addpath(genpath(RAW_DATA));
 addpath(genpath(ANALYZED_DATA));
 
 SetGraphDefaults;
-%% Set conditions
-MODELS           = {'CCK','CCKAD'}; %WT and AD models
-EXPER_CONDITIONS = {'baseline','CNO'};
-MONTHS           = {'3mon'};
-INDICATOR_FOLDER = 'hM3D_DioGC\'; %L_hM3D_DioGC_R_hM3D_GFAPGC
 %%
 for imonth = 1:length(MONTHS)
     thisMonth = MONTHS{imonth};
     % Loop through each condition
     for icondition = 1:length(EXPER_CONDITIONS)
         thisExperCondition = EXPER_CONDITIONS{icondition};
-        %hard code for now
-        if strcmp(thisExperCondition,'baseline')
-            DATA_FOLDER = ['20211206_' thisMonth '_baseline\'];
-        elseif strcmp(thisExperCondition,'CNO')
-            DATA_FOLDER = ['20211207_' thisMonth '_CNO_1mgkg_40min\'];
-        end
+        thisDir = [RAW_DATA '\'];
+        animalSessionsSearch = sprintf('*_%s_%s*',thisMonth,thisExperCondition);
+        allAnimalFolders = dir(fullfile(thisDir, animalSessionsSearch));
+        DATA_FOLDER = [allAnimalFolders.name '\'];
+
         % loop through each model
         for imodel = 1:length(MODELS)
             thisModel = MODELS{imodel};
@@ -158,3 +150,4 @@ for imonth = 1:length(MONTHS)
         end %model
     end %exper condition
 end %month
+end

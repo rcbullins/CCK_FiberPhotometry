@@ -45,7 +45,7 @@ SetGraphDefaults;
 MODELS           = {'CCK','CCKAD'}; %WT and AD models
 EXPER_CONDITIONS = {'baseline','CNO'};
 INDICATOR_FOLDER = 'hM3D_DioGC\'; %L_hM3D_DioGC_R_hM3D_GFAPGC
-MONTHS = {'3mon'};
+MONTHS = {'3mon','4mon'};
 %%
 for imonth = 1:length(MONTHS)
     thisMonth = MONTHS{imonth};
@@ -70,8 +70,8 @@ for imonth = 1:length(MONTHS)
                 %% Open session data
                 load([ANALYZED_DATA INDICATOR_FOLDER thisMonth '/' thisSession '_data.mat'], 'ca_data');
                 %% Filter data
-                ca_data.chan1_filt = filter_2sIIR(ca_data.chan1_dg',cutoff_freq,samp_freq,IIR_order,filter_type)+ca_data.chan1_dg(1);
-                ca_data.chan2_filt = filter_2sIIR(ca_data.chan2_dg',cutoff_freq,samp_freq,IIR_order,filter_type)+ca_data.chan2_dg(1);  %highpass filter
+                ca_data.chan1_filt = filter_2sIIR(ca_data.chan1_dg',cutoff_freq,samp_freq,IIR_order,filter_type)+mean(ca_data.chan1_dg(1:100));
+                ca_data.chan2_filt = filter_2sIIR(ca_data.chan2_dg',cutoff_freq,samp_freq,IIR_order,filter_type)+mean(ca_data.chan2_dg(1:100));  %highpass filter
                 %% Plot with filter
                 figure;
                 sgtitle({[thisExperCondition ' & ' thisModel ' (' strrep(thisSession,'_',' ') ')'],...
