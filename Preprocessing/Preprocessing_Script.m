@@ -80,20 +80,8 @@ for imonth = 1:length(MONTHS)
                 %% Load in excel sheets
                 % Identify excel sheet to load in
                 THIS_CA_DATA = [RAW_DATA DATA_FOLDER INDICATOR_FOLDER THIS_SESSION_DIR 'Fluorescence.csv'];
-                this_ca_data = readtable(THIS_CA_DATA);
-                
-                %% Organize data in struct
-                ca_data.time      = this_ca_data.TimeStamp;
-                ca_data.chan1_ref = this_ca_data.CH1_410;
-                ca_data.chan1_gcamp = this_ca_data.CH1_470;
-                ca_data.chan2_ref = this_ca_data.CH2_410;
-                ca_data.chan2_gcamp = this_ca_data.CH2_470;
-                %% Get change of fluroscence (corrected for noise) dF/F =( F(t) - F0)/F0
-                ca_data.chan1_ratio = ca_data.chan1_gcamp./ca_data.chan1_ref;
-                ca_data.chan2_ratio = ca_data.chan2_gcamp./ca_data.chan2_ref;
-                
-                ca_data.chan1_dg     = (ca_data.chan1_ratio/median(ca_data.chan1_ratio)-1)*100;
-                ca_data.chan2_dg     = (ca_data.chan2_ratio/median(ca_data.chan2_ratio)-1)*100;
+                %% Get Data Struct
+                ca_data = getDataStruct(THIS_CA_DATA);
                 %% Plot
                 % Plot raw example trace for channel 1
                 traceFig = figure;

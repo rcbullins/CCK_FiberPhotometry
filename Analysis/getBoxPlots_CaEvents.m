@@ -222,7 +222,12 @@ elseif groupModelBoxplots
         scatter(2*ones(length(vertcat(CCK_CNO_largeEvents.timeFreq)'),1), vertcat(CCK_CNO_largeEvents.timeFreq)',[],colorMap(2,:));
         scatter(3*ones(length(vertcat(CCKAD_BL_largeEvents.timeFreq)'),1), vertcat(CCKAD_BL_largeEvents.timeFreq)',[],colorMap(3,:));
         scatter(4*ones(length(vertcat(CCKAD_CNO_largeEvents.timeFreq)'),1), vertcat(CCKAD_CNO_largeEvents.timeFreq)',[],colorMap(4,:));
-        
+        for i = 1:size(CCK_BL_largeEvents,2)
+            plot([1 2], [CCK_BL_largeEvents(i).timeFreq CCK_CNO_largeEvents(i).timeFreq],'Color',[0 0 0]+.8);
+        end
+        for i = 1:size(CCKAD_BL_largeEvents,2)
+            plot([3 4], [CCKAD_BL_largeEvents(i).timeFreq CCKAD_CNO_largeEvents(i).timeFreq],'Color',[0 0 0]+.8);
+        end
         legend([lg1,lg2]);
         %% auc
         auc(:,1) = vertcat(CCK_BL_largeEvents.auc)';
@@ -267,6 +272,12 @@ elseif groupModelBoxplots
         scatter(2*ones(length(vertcat(CCK_CNO_largeEvents.auc)'),1), vertcat(CCK_CNO_largeEvents.auc)',[],colorMap(2,:));
         scatter(3*ones(length(vertcat(CCKAD_BL_largeEvents.auc)'),1), vertcat(CCKAD_BL_largeEvents.auc)',[],colorMap(3,:));
         scatter(4*ones(length(vertcat(CCKAD_CNO_largeEvents.auc)'),1), vertcat(CCKAD_CNO_largeEvents.auc)',[],colorMap(4,:));
+        for i = 1:size(CCK_BL_largeEvents,2)
+            plot([1 2], [CCK_BL_largeEvents(i).auc CCK_CNO_largeEvents(i).auc],'Color',[0 0 0]+.8);
+        end
+        for i = 1:size(CCKAD_BL_largeEvents,2)
+            plot([3 4], [CCKAD_BL_largeEvents(i).auc CCKAD_CNO_largeEvents(i).auc],'Color',[0 0 0]+.8);
+        end
         
         legend([lg1,lg2]);
         clear timeFreq ptFreq ct amp auc;
@@ -316,7 +327,13 @@ elseif groupModelBoxplots
         scatter(2*ones(length(vertcat(CCK_CNO_smallEvents.timeFreq)'),1), vertcat(CCK_CNO_smallEvents.timeFreq)',[],colorMap(2,:));
         scatter(3*ones(length(vertcat(CCKAD_BL_smallEvents.timeFreq)'),1), vertcat(CCKAD_BL_smallEvents.timeFreq)',[],colorMap(3,:));
         scatter(4*ones(length(vertcat(CCKAD_CNO_smallEvents.timeFreq)'),1), vertcat(CCKAD_CNO_smallEvents.timeFreq)',[],colorMap(4,:));
-        
+        for i = 1:size(CCK_BL_smallEvents,2)
+            plot([1 2], [CCK_BL_smallEvents(i).timeFreq CCK_CNO_smallEvents(i).timeFreq],'Color',[0 0 0]+.8);
+        end
+        for i = 1:size(CCKAD_BL_smallEvents,2)
+            plot([3 4], [CCKAD_BL_smallEvents(i).timeFreq CCKAD_CNO_smallEvents(i).timeFreq],'Color',[0 0 0]+.8);
+        end
+
         legend([lg1,lg2]);
         %% auc
         auc(:,1) = vertcat(CCK_BL_smallEvents.auc)';
@@ -361,7 +378,13 @@ elseif groupModelBoxplots
         scatter(2*ones(length(vertcat(CCK_CNO_smallEvents.auc)'),1), vertcat(CCK_CNO_smallEvents.auc)',[],colorMap(2,:));
         scatter(3*ones(length(vertcat(CCKAD_BL_smallEvents.auc)'),1), vertcat(CCKAD_BL_smallEvents.auc)',[],colorMap(3,:));
         scatter(4*ones(length(vertcat(CCKAD_CNO_smallEvents.auc)'),1), vertcat(CCKAD_CNO_smallEvents.auc)',[],colorMap(4,:));
-        
+        for i = 1:size(CCK_BL_smallEvents,2)
+            plot([1 2], [CCK_BL_smallEvents(i).auc CCK_CNO_smallEvents(i).auc],'Color',[0 0 0]+.8);
+        end
+        for i = 1:size(CCKAD_BL_smallEvents,2)
+            plot([3 4], [CCKAD_BL_smallEvents(i).auc CCKAD_CNO_smallEvents(i).auc],'Color',[0 0 0]+.8);
+        end
+
         legend([lg1,lg2]);
         clear timeFreq ptFreq ct amp auc;
     end %month

@@ -98,7 +98,13 @@ for imonth = 1:length(MONTHS)
     scatter(2*ones(length(vertcat(IN_CCK_CNO_largeEvents.timeFreq)'),1), vertcat(IN_CCK_CNO_largeEvents.timeFreq)',[],colorMap(2,:));
     scatter(3*ones(length(vertcat(IN_CCKAD_BL_largeEvents.timeFreq)'),1), vertcat(IN_CCKAD_BL_largeEvents.timeFreq)',[],colorMap(3,:));
     scatter(4*ones(length(vertcat(IN_CCKAD_CNO_largeEvents.timeFreq)'),1), vertcat(IN_CCKAD_CNO_largeEvents.timeFreq)',[],colorMap(4,:));
-    
+    % Add lines to boxplots connecting points
+    for i = 1:size(IN_CCK_BL_largeEvents,2)
+       plot([1 2], [IN_CCK_BL_largeEvents(i).timeFreq IN_CCK_CNO_largeEvents(i).timeFreq],'Color',[0 0 0]+.8);
+   end
+    for i = 1:size(IN_CCKAD_BL_largeEvents,2)
+       plot([3 4], [IN_CCKAD_BL_largeEvents(i).timeFreq IN_CCKAD_CNO_largeEvents(i).timeFreq],'Color',[0 0 0]+.8);
+    end
     legend([lg1,lg2]);
     %%%%%%%% Glia
     timeFreq(:,1) = vertcat(Gl_CCK_BL_largeEvents.timeFreq)';
@@ -143,7 +149,13 @@ for imonth = 1:length(MONTHS)
     scatter(2*ones(length(vertcat(Gl_CCK_CNO_largeEvents.timeFreq)'),1), vertcat(Gl_CCK_CNO_largeEvents.timeFreq)',[],colorMap(2,:));
     scatter(3*ones(length(vertcat(Gl_CCKAD_BL_largeEvents.timeFreq)'),1), vertcat(Gl_CCKAD_BL_largeEvents.timeFreq)',[],colorMap(3,:));
     scatter(4*ones(length(vertcat(Gl_CCKAD_CNO_largeEvents.timeFreq)'),1), vertcat(Gl_CCKAD_CNO_largeEvents.timeFreq)',[],colorMap(4,:));
-    
+   % Add lines to boxplots connecting points
+    for i = 1:size(Gl_CCK_BL_largeEvents,2)
+       plot([1 2], [Gl_CCK_BL_largeEvents(i).timeFreq Gl_CCK_CNO_largeEvents(i).timeFreq],'Color',[0 0 0]+.8);
+    end
+    for i = 1:size(Gl_CCKAD_BL_largeEvents,2)
+       plot([3 4], [Gl_CCKAD_BL_largeEvents(i).timeFreq Gl_CCKAD_CNO_largeEvents(i).timeFreq],'Color',[0 0 0]+.8);
+    end
     legend([lg1,lg2]);
     %% AUC
     figure;
@@ -191,7 +203,13 @@ for imonth = 1:length(MONTHS)
     scatter(2*ones(length(vertcat(IN_CCK_CNO_largeEvents.auc)'),1), vertcat(IN_CCK_CNO_largeEvents.auc)',[],colorMap(2,:));
     scatter(3*ones(length(vertcat(IN_CCKAD_BL_largeEvents.auc)'),1), vertcat(IN_CCKAD_BL_largeEvents.auc)',[],colorMap(3,:));
     scatter(4*ones(length(vertcat(IN_CCKAD_CNO_largeEvents.auc)'),1), vertcat(IN_CCKAD_CNO_largeEvents.auc)',[],colorMap(4,:));
-    
+   % Add lines to boxplots connecting points
+    for i = 1:size(IN_CCK_BL_largeEvents,2)
+       plot([1 2], [IN_CCK_BL_largeEvents(i).auc IN_CCK_CNO_largeEvents(i).auc],'Color',[0 0 0]+.8);
+    end
+    for i = 1:size(IN_CCKAD_BL_largeEvents,2)
+       plot([3 4], [IN_CCKAD_BL_largeEvents(i).auc IN_CCKAD_CNO_largeEvents(i).auc],'Color',[0 0 0]+.8);
+    end
     legend([lg1,lg2]);
     % glia
     auc(:,1) = vertcat(Gl_CCK_BL_largeEvents.auc)';
@@ -237,6 +255,13 @@ for imonth = 1:length(MONTHS)
     scatter(3*ones(length(vertcat(Gl_CCKAD_BL_largeEvents.auc)'),1), vertcat(Gl_CCKAD_BL_largeEvents.auc)',[],colorMap(3,:));
     scatter(4*ones(length(vertcat(Gl_CCKAD_CNO_largeEvents.auc)'),1), vertcat(Gl_CCKAD_CNO_largeEvents.auc)',[],colorMap(4,:));
     
+   % Add lines to boxplots connecting points
+    for i = 1:size(IN_CCK_BL_largeEvents,2)
+       plot([1 2], [Gl_CCK_BL_largeEvents(i).auc Gl_CCK_CNO_largeEvents(i).auc],'Color',[0 0 0]+.8);
+    end
+    for i = 1:size(IN_CCKAD_BL_largeEvents,2)
+       plot([3 4], [Gl_CCKAD_BL_largeEvents(i).auc Gl_CCKAD_CNO_largeEvents(i).auc],'Color',[0 0 0]+.8);
+    end
     legend([lg1,lg2]);
     
     clear timeFreq ptFreq ct amp auc;
@@ -286,7 +311,13 @@ for imonth = 1:length(MONTHS)
     scatter(2*ones(length(vertcat(IN_CCK_CNO_smallEvents.timeFreq)'),1), vertcat(IN_CCK_CNO_smallEvents.timeFreq)',[],colorMap(2,:));
     scatter(3*ones(length(vertcat(IN_CCKAD_BL_smallEvents.timeFreq)'),1), vertcat(IN_CCKAD_BL_smallEvents.timeFreq)',[],colorMap(3,:));
     scatter(4*ones(length(vertcat(IN_CCKAD_CNO_smallEvents.timeFreq)'),1), vertcat(IN_CCKAD_CNO_smallEvents.timeFreq)',[],colorMap(4,:));
-    
+   % Add lines to boxplots connecting points
+    for i = 1:size(IN_CCK_BL_smallEvents,2)
+       plot([1 2], [IN_CCK_BL_smallEvents(i).timeFreq IN_CCK_CNO_smallEvents(i).timeFreq],'Color',[0 0 0]+.8);
+    end
+    for i = 1:size(IN_CCKAD_BL_smallEvents,2)
+       plot([3 4], [IN_CCKAD_BL_smallEvents(i).timeFreq IN_CCKAD_CNO_smallEvents(i).timeFreq],'Color',[0 0 0]+.8);
+    end
     legend([lg1,lg2]);
     % glia
     timeFreq(:,1) = vertcat(Gl_CCK_BL_smallEvents.timeFreq)';
@@ -331,7 +362,13 @@ for imonth = 1:length(MONTHS)
     scatter(2*ones(length(vertcat(Gl_CCK_CNO_smallEvents.timeFreq)'),1), vertcat(Gl_CCK_CNO_smallEvents.timeFreq)',[],colorMap(2,:));
     scatter(3*ones(length(vertcat(Gl_CCKAD_BL_smallEvents.timeFreq)'),1), vertcat(Gl_CCKAD_BL_smallEvents.timeFreq)',[],colorMap(3,:));
     scatter(4*ones(length(vertcat(Gl_CCKAD_CNO_smallEvents.timeFreq)'),1), vertcat(Gl_CCKAD_CNO_smallEvents.timeFreq)',[],colorMap(4,:));
-    
+   % Add lines to boxplots connecting points
+    for i = 1:size(Gl_CCK_BL_smallEvents,2)
+       plot([1 2], [Gl_CCK_BL_smallEvents(i).timeFreq Gl_CCK_CNO_smallEvents(i).timeFreq],'Color',[0 0 0]+.8);
+    end
+    for i = 1:size(IN_CCKAD_BL_smallEvents,2)
+       plot([3 4], [Gl_CCKAD_BL_smallEvents(i).timeFreq Gl_CCKAD_CNO_smallEvents(i).timeFreq],'Color',[0 0 0]+.8);
+    end
     legend([lg1,lg2]);
     %% auc - neurons vs glia
     figure;
@@ -379,7 +416,13 @@ for imonth = 1:length(MONTHS)
     scatter(2*ones(length(vertcat(IN_CCK_CNO_smallEvents.auc)'),1), vertcat(IN_CCK_CNO_smallEvents.auc)',[],colorMap(2,:));
     scatter(3*ones(length(vertcat(IN_CCKAD_BL_smallEvents.auc)'),1), vertcat(IN_CCKAD_BL_smallEvents.auc)',[],colorMap(3,:));
     scatter(4*ones(length(vertcat(IN_CCKAD_CNO_smallEvents.auc)'),1), vertcat(IN_CCKAD_CNO_smallEvents.auc)',[],colorMap(4,:));
-    
+       % Add lines to boxplots connecting points
+    for i = 1:size(IN_CCK_BL_smallEvents,2)
+       plot([1 2], [IN_CCK_BL_smallEvents(i).auc IN_CCK_CNO_smallEvents(i).auc],'Color',[0 0 0]+.8);
+    end
+    for i = 1:size(IN_CCKAD_BL_smallEvents,2)
+       plot([3 4], [IN_CCKAD_BL_smallEvents(i).auc IN_CCKAD_CNO_smallEvents(i).auc],'Color',[0 0 0]+.8);
+    end
     legend([lg1,lg2]);
     
     % glia
@@ -425,7 +468,13 @@ for imonth = 1:length(MONTHS)
     scatter(2*ones(length(vertcat(Gl_CCK_CNO_smallEvents.auc)'),1), vertcat(Gl_CCK_CNO_smallEvents.auc)',[],colorMap(2,:));
     scatter(3*ones(length(vertcat(Gl_CCKAD_BL_smallEvents.auc)'),1), vertcat(Gl_CCKAD_BL_smallEvents.auc)',[],colorMap(3,:));
     scatter(4*ones(length(vertcat(Gl_CCKAD_CNO_smallEvents.auc)'),1), vertcat(Gl_CCKAD_CNO_smallEvents.auc)',[],colorMap(4,:));
-    
+       % Add lines to boxplots connecting points
+    for i = 1:size(Gl_CCK_BL_smallEvents,2)
+       plot([1 2], [Gl_CCK_BL_smallEvents(i).auc Gl_CCK_CNO_smallEvents(i).auc],'Color',[0 0 0]+.8);
+    end
+    for i = 1:size(IN_CCKAD_BL_smallEvents,2)
+       plot([3 4], [Gl_CCKAD_BL_smallEvents(i).auc Gl_CCKAD_CNO_smallEvents(i).auc],'Color',[0 0 0]+.9);
+    end
     legend([lg1,lg2]);
     
     clear timeFreq ptFreq ct amp auc;
