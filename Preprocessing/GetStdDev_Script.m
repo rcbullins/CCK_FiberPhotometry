@@ -22,8 +22,8 @@ function [] = GetStdDev_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER)
 %     stdDev.chan1  , stdDev.chan2  (struct with standard deviation for
 %     each channel for one animal across baseline and CNO recordings)
 %     mean.chan1, mean.chan2
-%     concat_data struct 
-%               .time, .chan1, .chan2 
+%     concat_data struct
+%               .time, .chan1, .chan2
 % DEPENDENCIES (already ran the following scripts)
 %   Filtering_Script
 %        filter_2sIIR (Hechen code)
@@ -59,11 +59,16 @@ for imonth = 1:length(MONTHS)
         animalSessionsSearch_CNO = sprintf('CNO_%s_*_filtered.mat',thisModel);
         allAnimalFolders_CNO = dir(fullfile(thisDir, animalSessionsSearch_CNO));
         SESSIONS_CNO = {allAnimalFolders_CNO.name};
-        
+        previousSession = '';
         for isession = 1:length(SESSIONS_BL)
-            thisSession = SESSIONS_BL{isession};
+            thisSessionCurrent = SESSIONS_BL{isession};
             %take off baseline and filtered.mat
-            thisSession = thisSession(10:end-13);
+            lengthModelName = length(thisModel);
+            thisSession = thisSessionCurrent(10:end-13);
+            titleSession = thisSessionCurrent(10:10+lengthModelName+6);
+            if strcmp(titleSession,previousSession)
+                continue;
+            end
             % define directories to load
             THIS_SESSION_BL = [thisDir 'baseline_' thisSession '_filtered.mat'];
             THIS_SESSION_CNO = [thisDir 'CNO_' thisSession '_filtered.mat'];
@@ -85,79 +90,146 @@ for imonth = 1:length(MONTHS)
             dataMean.chan1 = mean(concat_data.chan1);
             % channel 2
             concat_data.chan2 = [bl_chan2 CNO_chan2];
-            stdDev.chan2 = std(concat_data.chan2);   
+            stdDev.chan2 = std(concat_data.chan2);
             dataMean.chan2 = mean(concat_data.chan2);
-            %% Tests plots with events hardcoded as test points
-            % Find events over a threshold value of 3 std from mean  (over butterworth filtered data)
-                thr.chan1 = 3*stdDev.chan1;
-                thr.chan2 = 3*stdDev.chan2;
-                
-                events_concat.chan1_idx = find(concat_data.chan1 >= (dataMean.chan1+thr.chan1));
-                events_concat.chan1_values = concat_data.chan1(events_concat.chan1_idx);
-                events_concat.chan2_idx = find(concat_data.chan2 >= (dataMean.chan2+thr.chan2));
-                events_concat.chan2_values = concat_data.chan2(events_concat.chan2_idx);
-            % Find small events_concat only
-                thr_small.chan1 = 1*stdDev.chan1;
-                thr_small.chan2 = 1*stdDev.chan1;
-                
-                smallEvents_concat.chan1_idx = find(concat_data.chan1 >= (dataMean.chan1+thr_small.chan1)...
-                                           & concat_data.chan1 < (dataMean.chan1+thr.chan1));
-                smallEvents_concat.chan1_values = concat_data.chan1(smallEvents_concat.chan1_idx);
-                smallEvents_concat.chan2_idx = find(concat_data.chan2 >= (dataMean.chan2+thr_small.chan1)...
-                                           & concat_data.chan2 < (dataMean.chan2+thr.chan2));
-                smallEvents_concat.chan2_values = concat_data.chan2(smallEvents_concat.chan2_idx);
+            %% Find super large events over a threshold value of 3 std from mean  (over butterworth filtered data)
+            SuperSD.chan1 = stdDev.chan1;
+            SuperSD.chan2 = stdDev.chan2;
+            SuperThr.chan1 = 3*stdDev.chan1;
+            SuperThr.chan2 = 3*stdDev.chan2;
+            SuperMean.chan1 = dataMean.chan1;
+            SuperMean.chan2 = dataMean.chan2;
+            
+            SuperEvents_concat.chan1_idx = find(concat_data.chan1 >= (SuperMean.chan1+SuperThr.chan1));
+            SuperEvents_concat.chan1_values = concat_data.chan1(SuperEvents_concat.chan1_idx);
+            SuperEvents_concat.chan2_idx = find(concat_data.chan2 >= (SuperMean.chan2+SuperThr.chan2));
+            SuperEvents_concat.chan2_values = concat_data.chan2(SuperEvents_concat.chan2_idx);
+            %% Fing large events
+            % Take out super large events
+            concat_noSuper.chan1 = concat_data.chan1;
+            concat_noSuper.chan1(SuperEvents_concat.chan1_idx) = [];
+            concat_noSuper.chan2 = concat_data.chan2;
+            concat_noSuper.chan2(SuperEvents_concat.chan2_idx) = [];
+            
+            LargeSD.chan1 = std(concat_noSuper.chan1);
+            LargeSD.chan2 = std(concat_noSuper.chan2);
+            LargeThr.chan1 = 3*LargeSD.chan1;
+            LargeThr.chan2 = 3*LargeSD.chan2;
+            LargeMean.chan1 = mean(concat_noSuper.chan1);
+            LargeMean.chan2 = mean(concat_noSuper.chan2);
+            
+            LargeEvents_concat.chan1_idx = find(concat_data.chan1 >= (LargeMean.chan1+LargeThr.chan1)...
+                & concat_data.chan1 < (SuperMean.chan1+SuperThr.chan1));
+            LargeEvents_concat.chan1_values = concat_data.chan1(LargeEvents_concat.chan1_idx);
+            LargeEvents_concat.chan2_idx = find(concat_data.chan2 >= (LargeMean.chan2+LargeThr.chan1)...
+                & concat_data.chan2 < (SuperMean.chan2+SuperThr.chan2));
+            LargeEvents_concat.chan2_values = concat_data.chan2(LargeEvents_concat.chan2_idx);
+            %% Find small events_concat only
+            % Take out large events and super large events
+            % Take out super large events
+            superAndLargeIdx.chan1 = [SuperEvents_concat.chan1_idx LargeEvents_concat.chan1_idx];
+            superAndLargeIdx.chan2 = [SuperEvents_concat.chan2_idx LargeEvents_concat.chan2_idx];
+            concat_noSuperLarge.chan1 = concat_data.chan1;
+            concat_noSuperLarge.chan1(superAndLargeIdx.chan1) = [];
+            concat_noSuperLarge.chan2 = concat_data.chan2;
+            concat_noSuperLarge.chan2(superAndLargeIdx.chan2) = [];
+            
+            SmallSD.chan1 = std(concat_noSuperLarge.chan1);
+            SmallSD.chan2 = std(concat_noSuperLarge.chan2);
+            SmallThr.chan1 = 3*SmallSD.chan1;
+            SmallThr.chan2 = 3*SmallSD.chan2;
+            SmallMean.chan1 = mean(concat_noSuperLarge.chan1);
+            SmallMean.chan2 = mean(concat_noSuperLarge.chan2);
+            
+            
+            SmallEvents_concat.chan1_idx = find(concat_data.chan1 >= (SmallMean.chan1+SmallThr.chan1)...
+                & concat_data.chan1 < (LargeMean.chan1+LargeThr.chan1)...
+                & concat_data.chan1 < (SuperMean.chan1+SuperThr.chan1));
+            SmallEvents_concat.chan1_values = concat_data.chan1(SmallEvents_concat.chan1_idx);
+            SmallEvents_concat.chan2_idx = find(concat_data.chan2 >= (SmallMean.chan2+SmallThr.chan1)...
+                & concat_data.chan2 < (LargeMean.chan2+LargeThr.chan2)...
+                & concat_data.chan2 < (SuperMean.chan2+SuperThr.chan2));
+            SmallEvents_concat.chan2_values = concat_data.chan2(SmallEvents_concat.chan2_idx);
             %% Plot concatenated with event more than 3 Std deviations
-           
-              % Plot channel 1 concatenated
-                figure;
-                 sgtitle({thisMonth ' ' strrep(thisSession,'_',' ') ': BL + CNO', ...
-                     'Large events over concatendated'});
-                subplot(2,1,1);
-                plot(concat_data.time,concat_data.chan1,'b');
-                hold on;
-                scatter(concat_data.time(events_concat.chan1_idx),events_concat.chan1_values,'k');
-                title('Channel 1');
-                box off;
-                ylabel('\Delta F/F (%)');
-                xlabel('Time (ms)');
-                xline(concat_data.time(length(bl_time)+1));
-             % Plot channel 2 concatenated
-                subplot(2,1,2);
-                plot(concat_data.time,concat_data.chan2,'b');
-                hold on;
-                scatter(concat_data.time(events_concat.chan2_idx),events_concat.chan2_values,'k');
-                title('Channel 2');
-                box off;
-                ylabel('\Delta F/F (%)');
-                xlabel('Time (ms)');
-                xline(concat_data.time(length(bl_time)+1));
+            
+            % Plot channel 1 concatenated
+            figure;
+            sgtitle({[thisMonth ' ' strrep(titleSession,'_',' ') ': BL + CNO']});
+            
             %% Plot small events concatenated with event more than 1 and less than 3 Std deviations
             
-              % Plot channel 1 concatenated
-                figure;
-                sgtitle({[thisMonth ' ' strrep(thisSession,'_',' ') ': BL + CNO'],...
-                    'Small events over concatendated'});
-                subplot(2,1,1);
-                plot(concat_data.time,concat_data.chan1,'b');
-                hold on;
-                scatter(concat_data.time(smallEvents_concat.chan1_idx),smallEvents_concat.chan1_values,'k');
-                title('Channel 1');
-                box off;
-                ylabel('\Delta F/F (%)');
-                xlabel('Time (ms)');
-                xline(concat_data.time(length(bl_time)+1));
-             % Plot channel 2 concatenated
-                subplot(2,1,2);
-                plot(concat_data.time,concat_data.chan2,'b');
-                hold on;
-                scatter(concat_data.time(smallEvents_concat.chan2_idx),smallEvents_concat.chan2_values,'k');
-                title('Channel 2');
-                box off;
-                ylabel('\Delta F/F (%)');
-                xlabel('Time (ms)');
-                xline(concat_data.time(length(bl_time)+1));
+            % Plot channel 1 concatenated
+            subplot(3,2,1);
+            plot(concat_data.time,concat_data.chan1,'b');
+            hold on;
+            scatter(concat_data.time(SmallEvents_concat.chan1_idx),SmallEvents_concat.chan1_values,'k');
+            title('Small Events: Channel 1');
+            box off;
+            ylabel('\Delta F/F (%)');
+            xlabel('Time (ms)');
+            xline(concat_data.time(length(bl_time)+1));
+            % Plot channel 2 concatenated
+            subplot(3,2,2);
+            plot(concat_data.time,concat_data.chan2,'b');
+            hold on;
+            scatter(concat_data.time(SmallEvents_concat.chan2_idx),SmallEvents_concat.chan2_values,'k');
+            title('Small Events: Channel 2');
+            box off;
+            ylabel('\Delta F/F (%)');
+            xlabel('Time (ms)');
+            xline(concat_data.time(length(bl_time)+1));
+            %% Plot large events concatenated with event more than 1 and less than 3 Std deviations
+            
+            % Plot channel 1 concatenated
+            subplot(3,2,3);
+            plot(concat_data.time,concat_data.chan1,'b');
+            hold on;
+            scatter(concat_data.time(LargeEvents_concat.chan1_idx),LargeEvents_concat.chan1_values,'k');
+            title('Large Events: Channel 1');
+            box off;
+            ylabel('\Delta F/F (%)');
+            xlabel('Time (ms)');
+            xline(concat_data.time(length(bl_time)+1));
+            % Plot channel 2 concatenated
+            subplot(3,2,4);
+            plot(concat_data.time,concat_data.chan2,'b');
+            hold on;
+            scatter(concat_data.time(LargeEvents_concat.chan2_idx),LargeEvents_concat.chan2_values,'k');
+            title('Large Events: Channel 2');
+            box off;
+            ylabel('\Delta F/F (%)');
+            xlabel('Time (ms)');
+            xline(concat_data.time(length(bl_time)+1));
+            %% Plot Super
+            subplot(3,2,5);
+            plot(concat_data.time,concat_data.chan1,'b');
+            hold on;
+            scatter(concat_data.time(SuperEvents_concat.chan1_idx),SuperEvents_concat.chan1_values,'k');
+            title('Super Events: Channel 1');
+            box off;
+            ylabel('\Delta F/F (%)');
+            xlabel('Time (ms)');
+            xline(concat_data.time(length(bl_time)+1));
+            % Plot channel 2 concatenated
+            subplot(3,2,6);
+            plot(concat_data.time,concat_data.chan2,'b');
+            hold on;
+            scatter(concat_data.time(SuperEvents_concat.chan2_idx),SuperEvents_concat.chan2_values,'k');
+            title('Super Events: Channel 2');
+            box off;
+            ylabel('\Delta F/F (%)');
+            xlabel('Time (ms)');
+            xline(concat_data.time(length(bl_time)+1));
+            
             %% Save the std
-            save([ANALYZED_DATA INDICATOR_FOLDER thisMonth '\' thisSession '_stdDev.mat'],'stdDev','dataMean','concat_data');
+            %save([ANALYZED_DATA INDICATOR_FOLDER thisMonth '\' thisSession '_stdDev.mat'],'stdDev','dataMean','concat_data');
+            save([ANALYZED_DATA INDICATOR_FOLDER thisMonth '\' thisSession '_stdDev.mat'],...
+                'concat_data',...
+                'SmallSD','SmallMean','SmallThr',...
+                'LargeSD','LargeMean','LargeThr',...
+                'SuperSD','SuperMean','SuperThr');
+            
+            previousSession = titleSession;
         end %session
     end %model
 end %month

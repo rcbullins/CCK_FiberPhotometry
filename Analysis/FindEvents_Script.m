@@ -43,28 +43,9 @@ addpath(genpath(CODE_REAGAN));
 addpath(genpath(ANALYZED_DATA));
 
 SetGraphDefaults;
-%% Run preprocessing
-% Preprocessing_Script;
-%% Run Filtering
-% Filtering_Script;
-%% Get std dev for each animal
-% GetStdDev_Script;
 %%
 for imonth = 1:length(MONTHS)
     thisMonth = MONTHS{imonth};
-    % Initiate a CSV file title (if csv file exists, delete it)
-    TABLE = [ANALYZED_DATA 'hm3D_DioGC/' thisMonth '/summarySheet_' thisMonth '.csv'];
-    
-    if exist(TABLE,'file')==2
-        delete(TABLE);
-    end
-    % Open the CSV file
-    csvFile = fopen(TABLE,'w');
-    % Make labels on columns: Subject, sustained, selective, accuracy, and
-    % reaction time
-    fprintf(csvFile,'Animal,Mean_C1, Mean_C2, SD_C1, SD_C2, Small_Event_Freq_C1, Small_Event_Freq_C2, Large_Event_Freq_C1, Large_Event_Freq_C2\n');
-    
-    
     % Loop through each condition
     for icondition = 1:length(EXPER_CONDITIONS)
         thisExperCondition = EXPER_CONDITIONS{icondition};
@@ -81,12 +62,12 @@ for imonth = 1:length(MONTHS)
             
             %make structs to store all data in for each channel - large
             %events
-            groupEvents.timeFreq = zeros(1,2*length(SESSIONS));
-            groupEvents.ptFreq   = zeros(1,2*length(SESSIONS));
-            groupEvents.ct       = zeros(1,2*length(SESSIONS));
-            groupEvents.auc      = zeros(1,2*length(SESSIONS));
-            groupEvents.amp      = {};
-            
+            largeGroupEvents.timeFreq = zeros(1,2*length(SESSIONS));
+            largeGroupEvents.ptFreq   = zeros(1,2*length(SESSIONS));
+            largeGroupEvents.ct       = zeros(1,2*length(SESSIONS));
+            largeGroupEvents.auc      = zeros(1,2*length(SESSIONS));
+            largeGroupEvents.amp      = {};
+            largeGroupEvents.s         = zeros(1,2*length(SESSIONS));
             %make structs to store all data in for each channel - small
             %events
             smallGroupEvents.timeFreq = zeros(1,2*length(SESSIONS));
@@ -94,180 +75,248 @@ for imonth = 1:length(MONTHS)
             smallGroupEvents.ct       = zeros(1,2*length(SESSIONS));
             smallGroupEvents.auc      = zeros(1,2*length(SESSIONS));
             smallGroupEvents.amp      = {};
+            smallGroupEvents.s        = zeros(1,2*length(SESSIONS));
             counter = 0;
+            %make structs to store all data in for each channel - super
+            %events
+            superGroupEvents.timeFreq = zeros(1,2*length(SESSIONS));
+            superGroupEvents.ptFreq   = zeros(1,2*length(SESSIONS));
+            superGroupEvents.ct       = zeros(1,2*length(SESSIONS));
+            superGroupEvents.auc      = zeros(1,2*length(SESSIONS));
+            superGroupEvents.amp      = {};
+            superGroupEvents.s        = zeros(1,2*length(SESSIONS));
+            counter = 0;
+            
+            previousSession = '';
             for isession = 1:length(SESSIONS)
                 thisSession = SESSIONS{isession};
+                modelNameLength = length(thisModel);
+                experConditionLength = length(thisExperCondition);
+                session_sex = thisSession(modelNameLength+experConditionLength+3);
+                titleSession = thisSession(experConditionLength+1:experConditionLength+modelNameLength+8);
+                
+                if strcmp(titleSession, previousSession)
+                    continue;
+                end
                 sessionDir = [thisDir thisSession '\'];
                 sessionFolder = dir(fullfile(sessionDir,'*_*'));
                 THIS_SESSION_DIR = [thisSession '\' sessionFolder.name '\'];
                 %% Load data
                 % calcium data
                 load([ANALYZED_DATA INDICATOR_FOLDER thisMonth '\' thisSession], 'ca_data');
+                ca_data.chan1 = ca_data.chan1_filt;
+                ca_data.chan2 = ca_data.chan2_filt;
                 % thresholding data (std dev)
                 animal_info = thisSession(length(thisExperCondition)+2:end-13);
                 stdDev_file = sprintf('%s_stdDev.mat',animal_info);
-                load(stdDev_file,'stdDev','dataMean','concat_data');
-                %% Find events over a threshold value of 3 std from mean  (over butterworth filtered data)
-                thr.chan1 = 3*stdDev.chan1;
-                thr.chan2 = 3*stdDev.chan2;
+                load(stdDev_file,...
+                    'SmallSD','SmallMean','SmallThr',...
+                    'LargeSD','LargeMean','LargeThr',...
+                    'SuperSD','SuperMean','SuperThr');
+                %% Find events  (over butterworth filtered data)
                 
-                events.chan1_idx = find(ca_data.chan1_filt >= (dataMean.chan1+thr.chan1));
-                events.chan1_values = ca_data.chan1_filt(events.chan1_idx);
-                events.chan2_idx = find(ca_data.chan2_filt >= (dataMean.chan2+thr.chan2));
-                events.chan2_values = ca_data.chan2_filt(events.chan2_idx);
-                %% Find small events only
-                thr_small.chan1 = 1*stdDev.chan1;
-                thr_small.chan2 = 1*stdDev.chan1;
+                SuperEvents.chan1_idx = find(ca_data.chan1 >= (SuperMean.chan1+SuperThr.chan1));
+                SuperEvents.chan1_values = ca_data.chan1(SuperEvents.chan1_idx);
+                SuperEvents.chan2_idx = find(ca_data.chan2 >= (SuperMean.chan2+SuperThr.chan2));
+                SuperEvents.chan2_values = ca_data.chan2(SuperEvents.chan2_idx);
                 
-                smallEvents.chan1_idx = find(ca_data.chan1_filt >= (dataMean.chan1+thr_small.chan1)...
-                    & ca_data.chan1_filt < (dataMean.chan1+thr.chan1));
-                smallEvents.chan1_values = ca_data.chan1_filt(smallEvents.chan1_idx);
-                smallEvents.chan2_idx = find(ca_data.chan2_filt >= (dataMean.chan2+thr_small.chan1)...
-                    & ca_data.chan2_filt < (dataMean.chan2+thr.chan2));
-                smallEvents.chan2_values = ca_data.chan2_filt(smallEvents.chan2_idx);
-                %% Test plot large events
+                LargeEvents.chan1_idx = find(ca_data.chan1 >= (LargeMean.chan1+LargeThr.chan1)...
+                    & ca_data.chan1 < (SuperMean.chan1+SuperThr.chan1));
+                LargeEvents.chan1_values = ca_data.chan1(LargeEvents.chan1_idx);
+                LargeEvents.chan2_idx = find(ca_data.chan2 >= (LargeMean.chan2+LargeThr.chan1)...
+                    & ca_data.chan2 < (SuperMean.chan2+SuperThr.chan2));
+                LargeEvents.chan2_values = ca_data.chan2(LargeEvents.chan2_idx);
+                
+                SmallEvents.chan1_idx = find(ca_data.chan1 >= (SmallMean.chan1+SmallThr.chan1)...
+                    & ca_data.chan1 < (LargeMean.chan1+LargeThr.chan1)...
+                    & ca_data.chan1 < (SuperMean.chan1+SuperThr.chan1));
+                SmallEvents.chan1_values = ca_data.chan1(SmallEvents.chan1_idx);
+                SmallEvents.chan2_idx = find(ca_data.chan2 >= (SmallMean.chan2+SmallThr.chan1)...
+                    & ca_data.chan2 < (LargeMean.chan2+LargeThr.chan2)...
+                    & ca_data.chan2 < (SuperMean.chan2+SuperThr.chan2));
+                SmallEvents.chan2_values = ca_data.chan2(SmallEvents.chan2_idx);
+                
+                %% Test plot events
                 figure;
-                sgtitle(['Large Events -' thisMonth ': ' thisExperCondition ' & ' thisModel ' (' strrep(thisSession,'_',' ') ')']);
-                % for channel 1
-                subplot(2,1,1);
-                plot(ca_data.time, ca_data.chan1_filt','b');
-                hold on
-                scatter(ca_data.time(events.chan1_idx),events.chan1_values,'k');
-                title('Channel 1');
-                box off;
-                ylabel('Filtered \Delta F/F (%)');
-                xlabel('Time (ms)');
-                xlim([0 ca_data.time(end)]);
-                % for channel 2
-                subplot(2,1,2);
-                plot(ca_data.time, ca_data.chan2_filt','b');
-                hold on
-                scatter(ca_data.time(events.chan2_idx),events.chan2_values,'k');
-                title('Channel 2');
-                box off;
-                ylabel('Filtered \Delta F/F (%)');
-                xlabel('Time (ms)');
-                xlim([0 ca_data.time(end)]);
+                sgtitle([thisMonth ': ' thisExperCondition ' & ' thisModel ' (' strrep(titleSession(modelNameLength+3:end),'_',' ') ')']);
                 %% Test plot small events
-                figure;
-                sgtitle(['Small Events -' thisMonth ': ' thisExperCondition ' & ' thisModel ' (' strrep(thisSession,'_',' ') ')']);
                 % for channel 1
-                subplot(2,1,1);
+                subplot(3,2,1);
                 plot(ca_data.time, ca_data.chan1_filt','b');
                 hold on;
-                scatter(ca_data.time(smallEvents.chan1_idx),smallEvents.chan1_values,'k');
-                title('Channel 1');
+                scatter(ca_data.time(SmallEvents.chan1_idx),SmallEvents.chan1_values,'k');
+                title('Small Events: Channel 1');
                 box off;
                 ylabel('Filtered \Delta F/F (%)');
                 xlabel('Time (ms)');
                 xlim([0 ca_data.time(end)]);
                 % for channel 2
-                subplot(2,1,2);
+                subplot(3,2,2);
                 plot(ca_data.time, ca_data.chan2_filt','b');
                 hold on
-                scatter(ca_data.time(smallEvents.chan2_idx),smallEvents.chan2_values,'k');
-                title('Channel 2');
+                scatter(ca_data.time(SmallEvents.chan2_idx),SmallEvents.chan2_values,'k');
+                title('Small Events: Channel 2');
                 box off;
                 ylabel('Filtered \Delta F/F (%)');
                 xlabel('Time (ms)');
                 xlim([0 ca_data.time(end)]);
+                
+                %% Test plot large events
+                % for channel 1
+                subplot(3,2,3);
+                plot(ca_data.time, ca_data.chan1_filt','b');
+                hold on;
+                scatter(ca_data.time(LargeEvents.chan1_idx),LargeEvents.chan1_values,'k');
+                title('Large Events: Channel 1');
+                box off;
+                ylabel('Filtered \Delta F/F (%)');
+                xlabel('Time (ms)');
+                xlim([0 ca_data.time(end)]);
+                % for channel 2
+                subplot(3,2,4);
+                plot(ca_data.time, ca_data.chan2_filt','b');
+                hold on
+                scatter(ca_data.time(LargeEvents.chan2_idx),LargeEvents.chan2_values,'k');
+                title('Large Events: Channel 2');
+                box off;
+                ylabel('Filtered \Delta F/F (%)');
+                xlabel('Time (ms)');
+                xlim([0 ca_data.time(end)]);
+                %% Super Events
+                % for channel 1
+                subplot(3,2,5);
+                plot(ca_data.time, ca_data.chan1_filt','b');
+                hold on
+                scatter(ca_data.time(SuperEvents.chan1_idx),SuperEvents.chan1_values,'k');
+                title('Super Events: Channel 1');
+                box off;
+                ylabel('Filtered \Delta F/F (%)');
+                xlabel('Time (ms)');
+                xlim([0 ca_data.time(end)]);
+                % for channel 2
+                subplot(3,2,6);
+                plot(ca_data.time, ca_data.chan2_filt','b');
+                hold on
+                scatter(ca_data.time(SuperEvents.chan2_idx),SuperEvents.chan2_values,'k');
+                title('Super Events: Channel 2');
+                box off;
+                ylabel('Filtered \Delta F/F (%)');
+                xlabel('Time (ms)');
+                xlim([0 ca_data.time(end)]);
+                
+                %% Super Event Characterisitcs - Count, Freq Time, Freq Sampled Points, Amplitude, Area under curve
+                % number of events
+                superChrts.chan1_ct = length(SuperEvents.chan1_idx);
+                superChrts.chan2_ct = length(SuperEvents.chan2_idx);
+                % frequency of events (divide by amount of seconds) (time
+                % in ms --> sec)
+                superChrts.chan1_timefreq = superChrts.chan1_ct/(ca_data.time(end)/1000);
+                superChrts.chan2_timefreq = superChrts.chan2_ct/(ca_data.time(end)/1000);
+                % frequency of events (divide by amount of points)
+                superChrts.chan1_ptfreq = superChrts.chan1_ct/length(ca_data.time);
+                superChrts.chan2_ptfreq = superChrts.chan2_ct/length(ca_data.time);
+                % amplitude of events
+                superChrts.chan1_amp = SuperEvents.chan1_values;
+                superChrts.chan2_amp = SuperEvents.chan2_values;
+                % under the curve (add all amplitude values)
+                superChrts.chan1_auc = sum(superChrts.chan1_amp);
+                superChrts.chan2_auc = sum(superChrts.chan2_amp);
                 %% Large Event Characterisitcs - Count, Freq Time, Freq Sampled Points, Amplitude, Area under curve
                 % number of events
-                eventChrts.chan1_ct = length(events.chan1_idx);
-                eventChrts.chan2_ct = length(events.chan2_idx);
+                largeChrts.chan1_ct = length(LargeEvents.chan1_idx);
+                largeChrts.chan2_ct = length(LargeEvents.chan2_idx);
                 % frequency of events (divide by amount of seconds) (time
                 % in ms --> sec)
-                eventChrts.chan1_timefreq = eventChrts.chan1_ct/(ca_data.time(end)/1000);
-                eventChrts.chan2_timefreq = eventChrts.chan2_ct/(ca_data.time(end)/1000);
+                largeChrts.chan1_timefreq = largeChrts.chan1_ct/(ca_data.time(end)/1000);
+                largeChrts.chan2_timefreq = largeChrts.chan2_ct/(ca_data.time(end)/1000);
                 % frequency of events (divide by amount of points)
-                eventChrts.chan1_ptfreq = eventChrts.chan1_ct/length(ca_data.time);
-                eventChrts.chan2_ptfreq = eventChrts.chan2_ct/length(ca_data.time);
+                largeChrts.chan1_ptfreq = largeChrts.chan1_ct/length(ca_data.time);
+                largeChrts.chan2_ptfreq = largeChrts.chan2_ct/length(ca_data.time);
                 % amplitude of events
-                eventChrts.chan1_amp = events.chan1_values;
-                eventChrts.chan2_amp = events.chan2_values;
+                largeChrts.chan1_amp = LargeEvents.chan1_values;
+                largeChrts.chan2_amp = LargeEvents.chan2_values;
                 % under the curve (add all amplitude values)
-                eventChrts.chan1_auc = sum(eventChrts.chan1_amp);
-                eventChrts.chan2_auc = sum(eventChrts.chan2_amp);
+                largeChrts.chan1_auc = sum(largeChrts.chan1_amp);
+                largeChrts.chan2_auc = sum(largeChrts.chan2_amp);
                 %% Small Event Characterisitcs - Count, Freq Time, Freq Sampled Points, Amplitude, Area under curve
                 % number of events
-                smallEventChrts.chan1_ct = length(smallEvents.chan1_idx);
-                smallEventChrts.chan2_ct = length(smallEvents.chan2_idx);
+                smallChrts.chan1_ct = length(SmallEvents.chan1_idx);
+                smallChrts.chan2_ct = length(SmallEvents.chan2_idx);
                 % frequency of events (divide by amount of seconds) (time
                 % in ms --> sec)
-                smallEventChrts.chan1_timefreq = smallEventChrts.chan1_ct/(ca_data.time(end)/1000);
-                smallEventChrts.chan2_timefreq = smallEventChrts.chan2_ct/(ca_data.time(end)/1000);
+                smallChrts.chan1_timefreq = smallChrts.chan1_ct/(ca_data.time(end)/1000);
+                smallChrts.chan2_timefreq = smallChrts.chan2_ct/(ca_data.time(end)/1000);
                 % frequency of events (divide by amount of points)
-                smallEventChrts.chan1_ptfreq = smallEventChrts.chan1_ct/length(ca_data.time);
-                smallEventChrts.chan2_ptfreq = smallEventChrts.chan2_ct/length(ca_data.time);
+                smallChrts.chan1_ptfreq = smallChrts.chan1_ct/length(ca_data.time);
+                smallChrts.chan2_ptfreq = smallChrts.chan2_ct/length(ca_data.time);
                 % amplitude of events
-                smallEventChrts.chan1_amp = smallEvents.chan1_values;
-                smallEventChrts.chan2_amp = smallEvents.chan2_values;
+                smallChrts.chan1_amp = SmallEvents.chan1_values;
+                smallChrts.chan2_amp = SmallEvents.chan2_values;
                 % under the curve (add all amplitude values)
-                smallEventChrts.chan1_auc = sum(smallEventChrts.chan1_amp);
-                smallEventChrts.chan2_auc = sum(smallEventChrts.chan2_amp);
+                smallChrts.chan1_auc = sum(smallChrts.chan1_amp);
+                smallChrts.chan2_auc = sum(smallChrts.chan2_amp);
                 %% Save Event Characteristics
-                save([ANALYZED_DATA INDICATOR_FOLDER thisMonth '\Events\' thisSession(1:end-13) '_events.mat'],'events','eventChrts','smallEventChrts');
+                save([ANALYZED_DATA INDICATOR_FOLDER thisMonth '\Events\' thisSession(1:end-13) '_events.mat'],'SmallEvents','SuperEvents','LargeEvents',...
+                                                                                                                'superChrts','largeChrts','smallChrts');
                 %% Make group characteristics for large events
                 %group chan 1 and chan2 in different vectors, but same
                 %struct
                 % Channel 1
-                groupEvents(isession+counter).timeFreq = eventChrts.chan1_timefreq;
-                groupEvents(isession+counter).ptFreq   = eventChrts.chan1_ptfreq;
-                groupEvents(isession+counter).ct       = eventChrts.chan1_ct;
-                groupEvents(isession+counter).auc      = eventChrts.chan1_auc;
-                groupEvents(isession+counter).amp      = eventChrts.chan1_amp;
+                largeGroupEvents(isession+counter).timeFreq = largeChrts.chan1_timefreq;
+                largeGroupEvents(isession+counter).ptFreq   = largeChrts.chan1_ptfreq;
+                largeGroupEvents(isession+counter).ct       = largeChrts.chan1_ct;
+                largeGroupEvents(isession+counter).auc      = largeChrts.chan1_auc;
+                largeGroupEvents(isession+counter).amp      = largeChrts.chan1_amp;
+                largeGroupEvents(isession+counter).s        = session_sex;
                 % Channel 2
-                groupEvents(isession+counter+1).timeFreq = eventChrts.chan2_timefreq;
-                groupEvents(isession+counter+1).ptFreq   = eventChrts.chan2_ptfreq;
-                groupEvents(isession+counter+1).ct       = eventChrts.chan2_ct;
-                groupEvents(isession+counter+1).auc      = eventChrts.chan2_auc;
-                groupEvents(isession+counter+1).amp      = eventChrts.chan2_amp;
-                
+                largeGroupEvents(isession+counter+1).timeFreq = largeChrts.chan2_timefreq;
+                largeGroupEvents(isession+counter+1).ptFreq   = largeChrts.chan2_ptfreq;
+                largeGroupEvents(isession+counter+1).ct       = largeChrts.chan2_ct;
+                largeGroupEvents(isession+counter+1).auc      = largeChrts.chan2_auc;
+                largeGroupEvents(isession+counter+1).amp      = largeChrts.chan2_amp;
+                largeGroupEvents(isession+counter+1).s        = session_sex;
                 %% Make group characteristics for small events
                 %group chan 1 and chan2 in different vectors, but same
                 %struct
                 % Channel 1
-                smallGroupEvents(isession+counter).timeFreq = smallEventChrts.chan1_timefreq;
-                smallGroupEvents(isession+counter).ptFreq   = smallEventChrts.chan1_ptfreq;
-                smallGroupEvents(isession+counter).ct       = smallEventChrts.chan1_ct;
-                smallGroupEvents(isession+counter).auc      = smallEventChrts.chan1_auc;
-                smallGroupEvents(isession+counter).amp      = smallEventChrts.chan1_amp;
+                smallGroupEvents(isession+counter).timeFreq = smallChrts.chan1_timefreq;
+                smallGroupEvents(isession+counter).ptFreq   = smallChrts.chan1_ptfreq;
+                smallGroupEvents(isession+counter).ct       = smallChrts.chan1_ct;
+                smallGroupEvents(isession+counter).auc      = smallChrts.chan1_auc;
+                smallGroupEvents(isession+counter).amp      = smallChrts.chan1_amp;
+                smallGroupEvents(isession+counter).s        = session_sex;
                 % Channel 2
-                smallGroupEvents(isession+counter+1).timeFreq = smallEventChrts.chan2_timefreq;
-                smallGroupEvents(isession+counter+1).ptFreq   = smallEventChrts.chan2_ptfreq;
-                smallGroupEvents(isession+counter+1).ct       = smallEventChrts.chan2_ct;
-                smallGroupEvents(isession+counter+1).auc      = smallEventChrts.chan2_auc;
-                smallGroupEvents(isession+counter+1).amp      = smallEventChrts.chan2_amp;
+                smallGroupEvents(isession+counter+1).timeFreq = smallChrts.chan2_timefreq;
+                smallGroupEvents(isession+counter+1).ptFreq   = smallChrts.chan2_ptfreq;
+                smallGroupEvents(isession+counter+1).ct       = smallChrts.chan2_ct;
+                smallGroupEvents(isession+counter+1).auc      = smallChrts.chan2_auc;
+                smallGroupEvents(isession+counter+1).amp      = smallChrts.chan2_amp;
+                smallGroupEvents(isession+counter+1).s        = session_sex;
+                %% Make group characteristics for super events
+                %group chan 1 and chan2 in different vectors, but same
+                %struct
+                % Channel 1
+                superGroupEvents(isession+counter).timeFreq = superChrts.chan1_timefreq;
+                superGroupEvents(isession+counter).ptFreq   = superChrts.chan1_ptfreq;
+                superGroupEvents(isession+counter).ct       = superChrts.chan1_ct;
+                superGroupEvents(isession+counter).auc      = superChrts.chan1_auc;
+                superGroupEvents(isession+counter).amp      = superChrts.chan1_amp;
+                superGroupEvents(isession+counter).s        = session_sex;
+                % Channel 2
+                superGroupEvents(isession+counter+1).timeFreq = superChrts.chan2_timefreq;
+                superGroupEvents(isession+counter+1).ptFreq   = superChrts.chan2_ptfreq;
+                superGroupEvents(isession+counter+1).ct       = superChrts.chan2_ct;
+                superGroupEvents(isession+counter+1).auc      = superChrts.chan2_auc;
+                superGroupEvents(isession+counter+1).amp      = superChrts.chan2_amp;
+                superGroupEvents(isession+counter+1).s        = session_sex;
                 counter = counter +1;
-                %% Write to excel sheet for easy access
-                if strcmp(thisExperCondition, 'baseline')
-                    excel_cond = 'BL';
-                else
-                    excel_cond = 'CNO';
-                end
-                animal_info_excel = [animal_info '_' excel_cond];
                 
-%                 animal_info_excel = {animal_info_excel};
-                Mean_C1 = dataMean.chan1;
-                Mean_C2 = dataMean.chan2;
-                SD_C1 = stdDev.chan1;
-                SD_C2 = stdDev.chan2;
-                Small_Event_Freq_C2 = smallEventChrts.chan2_timefreq;
-                Small_Event_Freq_C1 = smallEventChrts.chan1_timefreq;
-                Large_Event_Freq_C2 = eventChrts.chan2_timefreq;
-                Large_Event_Freq_C1 = eventChrts.chan1_timefreq;
-                % make table
-                fprintf(csvFile,'%s,%0.5f,%0.5f,%0.5f,%0.5f,%0.5f,%0.5f,%0.5f,%0.5f\n',...
-                    animal_info_excel,Mean_C1, Mean_C2, SD_C1, SD_C2,Small_Event_Freq_C1,...
-                    Small_Event_Freq_C2, Large_Event_Freq_C1, Large_Event_Freq_C2);
-                
+                previousSession = titleSession;
             end %session
-            save([ANALYZED_DATA INDICATOR_FOLDER thisMonth '\Events\' thisExperCondition '_' thisModel '_groupEvents.mat'],'groupEvents','smallGroupEvents');
-            clear groupEvents smallGroupEvents;
+            save([ANALYZED_DATA INDICATOR_FOLDER thisMonth '\Events\' thisExperCondition '_' thisModel '_groupEvents.mat'],'largeGroupEvents','superGroupEvents','smallGroupEvents');
+            clear largeGroupEvents superGroupEvents smallGroupEvents;
         end %model
-    end %exper condition
-    % close excel file
-    fclose(csvFile);
+    end %exper conditions
 end %month
 
 end

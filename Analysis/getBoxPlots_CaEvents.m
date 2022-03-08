@@ -1,5 +1,24 @@
 function getBoxPlots_CaEvents(MODELS,MONTHS, INDICATOR_FOLDER)
-
+% PURPOSE
+%     Get boxplots of large and small calcium events. Break up comparing BL
+%     vs CNO recordings. Also color dots on boxplots as sex-specific color.
+% INPUT
+%    - mat files group event data
+%          groupEvents.mat
+%               smallGroupEvents
+%               groupEvents
+%                   each are structs that contain info for each animal
+%                   within a group. Groups include CCK BL, CCK CNO, CCKAD
+%                   BL, and CCKAD CNO. Info includes sex of animal,
+%                   frequency of events, auc of events, etc.
+% OUTPUTS
+%  Boxplots comparing CCK baseline and CNO, and boxplots comparing CCKAD
+%  BL and CNO. Boxplots have dots overlaying showing individual sessions.
+%  Each dot is colored to be sex specific.
+% DEPENDENCIES
+%   FindEvents_Script
+% HISTORY
+%   3.3.2022 Reagan Bullins
 
 BASEPATH = 'C:\Users\rcbul\OneDrive - University of North Carolina at Chapel Hill\Song_Lab\';
 CODE_REAGAN = [BASEPATH 'Code\'];
@@ -17,15 +36,35 @@ if ~groupModelBoxplots
             EVENT_BL = [ANALYZED_DATA INDICATOR_FOLDER thisMonth '\Events\baseline_' thisModel '_groupEvents.mat'];
             EVENT_CNO = [ANALYZED_DATA INDICATOR_FOLDER thisMonth '\Events\CNO_' thisModel '_groupEvents.mat'];
             %% Load Group Events
-            load(EVENT_BL, 'groupEvents','smallGroupEvents');
-            BL_largeEvents = groupEvents;
+            load(EVENT_BL, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
+            BL_largeEvents = largeGroupEvents;
+            BL_superEvents = superGroupEvents;
             BL_smallEvents = smallGroupEvents;
-            load(EVENT_CNO, 'groupEvents','smallGroupEvents');
-            CNO_largeEvents = groupEvents;
+            load(EVENT_CNO, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
+            CNO_largeEvents = largeGroupEvents;
+            CNO_superEvents = superGroupEvents;
             CNO_smallEvents = smallGroupEvents;
             %% Color Map
             colorMap(1,:) = [0 0 1];
             colorMap(2,:) = [1 0 0];
+            colorSex_BL = zeros(length(BL_largeEvents.s),3);
+            colorSex_CNO = zeros(length(CNO_largeEvents.s),3);
+            % get color for dots of female vs male
+            for i = 1:length(BL_largeEvents)
+                if strcmp(BL_largeEvents(i).s,'f')
+                    colorSex_BL(i,:) = [0 0 0];
+                elseif strcmp(BL_largeEvents(i).s,'m')
+                    colorSex_BL(i,:) = [1 1 1];
+                end
+            end
+                        % get color for dots of female vs male
+            for i = 1:length(CNO_largeEvents)
+                if strcmp(CNO_largeEvents(i).s,'f')
+                    colorSex_CNO(i,:) = [0 0 0];
+                elseif strcmp(CNO_largeEvents(i).s,'m')
+                    colorSex_CNO(i,:) = [1 1 1];
+                end
+            end
             %% One big plot
             figure;
             sgtitle([thisMonth ': Large Events - ' thisModel ': Baseline vs CNO']);
@@ -39,8 +78,18 @@ if ~groupModelBoxplots
             title('Event Frequency');
             box off;
             xticklabels({'Baseline','CNO'});
-            scatter(ones(length(vertcat(BL_largeEvents.timeFreq)'),1), vertcat(BL_largeEvents.timeFreq)');
-            scatter(2*ones(length(vertcat(CNO_largeEvents.timeFreq)'),1), vertcat(CNO_largeEvents.timeFreq)');
+            for idot = 1:length(vertcat(BL_largeEvents.timeFreq)')
+            scatter(ones(length(vertcat(BL_largeEvents(idot).timeFreq)'),1), vertcat(BL_largeEvents(idot).timeFreq)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_BL(idot),...
+                'MarkerFaceAlpha',0.2);
+            end
+            for idot = 1:length(vertcat(CNO_largeEvents.timeFreq)')
+            scatter(2*ones(length(vertcat(CNO_largeEvents(idot).timeFreq)'),1), vertcat(CNO_largeEvents(idot).timeFreq)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
             
             
             %% Plot point freq
@@ -53,8 +102,14 @@ if ~groupModelBoxplots
             title('Event Frequency Samples');
             box off;
             xticklabels({'Baseline','CNO'});
-            scatter(ones(length(vertcat(BL_largeEvents.ptFreq)'),1), vertcat(BL_largeEvents.ptFreq)');
-            scatter(2*ones(length(vertcat(CNO_largeEvents.ptFreq)'),1), vertcat(CNO_largeEvents.ptFreq)');
+            scatter(ones(length(vertcat(BL_largeEvents.ptFreq)'),1), vertcat(BL_largeEvents.ptFreq)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_BL,...
+                'MarkerFaceAlpha',0.2);
+            scatter(2*ones(length(vertcat(CNO_largeEvents.ptFreq)'),1), vertcat(CNO_largeEvents.ptFreq)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CNO,...
+                'MarkerFaceAlpha',0.2);
             
             %% Plot count
             ct(:,1) = vertcat(BL_largeEvents.ct)';
@@ -66,8 +121,18 @@ if ~groupModelBoxplots
             title('Number of Events');
             box off;
             xticklabels({'Baseline','CNO'});
-            scatter(ones(length(vertcat(BL_largeEvents.ct)'),1), vertcat(BL_largeEvents.ct)');
-            scatter(2*ones(length(vertcat(CNO_largeEvents.ct)'),1), vertcat(CNO_largeEvents.ct)');
+            for idot = 1:length(vertcat(BL_largeEvents.ct)')
+            scatter(ones(length(vertcat(BL_largeEvents(idot).ct)'),1), vertcat(BL_largeEvents(idot).ct)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
+            for idot = 1:length(vertcat(CNO_largeEvents.ct)')
+            scatter(2*ones(length(vertcat(CNO_largeEvents(idot).ct)'),1), vertcat(CNO_largeEvents(idot).ct)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
             
             %% Plot auc
             auc(:,1) = vertcat(BL_largeEvents.auc)';
@@ -79,8 +144,18 @@ if ~groupModelBoxplots
             title('AUC of Events');
             box off;
             xticklabels({'Baseline','CNO'});
-            scatter(ones(length(vertcat(BL_largeEvents.auc)'),1), vertcat(BL_largeEvents.auc)');
-            scatter(2*ones(length(vertcat(CNO_largeEvents.auc)'),1), vertcat(CNO_largeEvents.auc)');
+            for idot = 1:length(vertcat(BL_largeEvents.auc)')
+            scatter(ones(length(vertcat(BL_largeEvents(idot).auc)'),1), vertcat(BL_largeEvents(idot).auc)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
+            for idot = 1:length(vertcat(CNO_largeEvents.auc)')
+            scatter(2*ones(length(vertcat(CNO_largeEvents(idot).auc)'),1), vertcat(CNO_largeEvents(idot).auc)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
             
             %% Plot amplitudes
             %         amp(:,1) = vertcat(groupEventsBL.amp)';
@@ -105,8 +180,18 @@ if ~groupModelBoxplots
             title('Event Frequency');
             box off;
             xticklabels({'Baseline','CNO'});
-            scatter(ones(length(vertcat(BL_smallEvents.timeFreq)'),1), vertcat(BL_smallEvents.timeFreq)');
-            scatter(2*ones(length(vertcat(CNO_smallEvents.timeFreq)'),1), vertcat(CNO_smallEvents.timeFreq)');
+            for idot = 1:length(vertcat(BL_smallEvents.timeFreq)')
+            scatter(ones(length(vertcat(BL_smallEvents(idot).timeFreq)'),1), vertcat(BL_smallEvents(idot).timeFreq)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
+            for idot = 1:length(vertcat(CNO_smallEvents.timeFreq)')
+            scatter(2*ones(length(vertcat(CNO_smallEvents(idot).timeFreq)'),1), vertcat(CNO_smallEvents(idot).timeFreq)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
             
             %% Plot point freq
             ptFreq(:,1) = vertcat(BL_smallEvents.ptFreq)';
@@ -118,9 +203,18 @@ if ~groupModelBoxplots
             title('Event Frequency Samples');
             box off;
             xticklabels({'Baseline','CNO'});
-            scatter(ones(length(vertcat(BL_smallEvents.ptFreq)'),1), vertcat(BL_smallEvents.ptFreq)');
-            scatter(2*ones(length(vertcat(CNO_smallEvents.ptFreq)'),1), vertcat(CNO_smallEvents.ptFreq)');
-            
+            for idot = 1:length(vertcat(BL_smallEvents.ptFreq)')
+            scatter(ones(length(vertcat(BL_smallEvents(idot).ptFreq)'),1), vertcat(BL_smallEvents(idot).ptFreq)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
+            for idot = 1:length(vertcat(CNO_smallEvents.ptFreq)')
+            scatter(2*ones(length(vertcat(CNO_smallEvents(idot).ptFreq)'),1), vertcat(CNO_smallEvents(idot).ptFreq)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
             %% Plot count
             ct(:,1) = vertcat(BL_smallEvents.ct)';
             ct(:,2) = vertcat(CNO_smallEvents.ct)';
@@ -131,8 +225,18 @@ if ~groupModelBoxplots
             title('Number of Events');
             box off;
             xticklabels({'Baseline','CNO'});
-            scatter(ones(length(vertcat(BL_smallEvents.ct)'),1), vertcat(BL_smallEvents.ct)');
-            scatter(2*ones(length(vertcat(CNO_smallEvents.ct)'),1), vertcat(CNO_smallEvents.ct)');
+            for idot = 1:length(vertcat(BL_smallEvents.ct)')
+            scatter(ones(length(vertcat(BL_smallEvents(idot).ct)'),1), vertcat(BL_smallEvents(idot).ct)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
+            for idot = 1:length(vertcat(CNO_smallEvents(idot).ct)')
+            scatter(2*ones(length(vertcat(CNO_smallEvents(idot).ct)'),1), vertcat(CNO_smallEvents(idot).ct)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
             
             %% Plot auc
             auc(:,1) = vertcat(BL_smallEvents.auc)';
@@ -144,8 +248,18 @@ if ~groupModelBoxplots
             title('AUC of Events');
             box off;
             xticklabels({'Baseline','CNO'});
-            scatter(ones(length(vertcat(BL_smallEvents.auc)'),1), vertcat(BL_smallEvents.auc)');
-            scatter(2*ones(length(vertcat(CNO_smallEvents.auc)'),1), vertcat(CNO_smallEvents.auc)');
+            for idot = 1:length(vertcat(BL_smallEvents.auc)')
+            scatter(ones(length(vertcat(BL_smallEvents(idot).auc)'),1), vertcat(BL_smallEvents(idot).auc)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
+            for idot = 1:length(vertcat(CNO_smallEvents.auc)')
+            scatter(2*ones(length(vertcat(CNO_smallEvents(idot).auc)'),1), vertcat(CNO_smallEvents(idot).auc)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
             clear timeFreq ptFreq ct amp auc;
         end %model
     end %month
@@ -159,23 +273,63 @@ elseif groupModelBoxplots
         CCKAD_EVENT_CNO = [ANALYZED_DATA INDICATOR_FOLDER thisMonth '\Events\CNO_CCKAD_groupEvents.mat'];
         
         %% Load Group Events
-        load(CCK_EVENT_BL, 'groupEvents','smallGroupEvents');
-        CCK_BL_largeEvents = groupEvents;
+        load(CCK_EVENT_BL, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
+        CCK_BL_largeEvents = largeGroupEvents;
+        CCK_BL_superEvents = superGroupEvents;
         CCK_BL_smallEvents = smallGroupEvents;
-        load(CCK_EVENT_CNO, 'groupEvents','smallGroupEvents');
-        CCK_CNO_largeEvents = groupEvents;
+        load(CCK_EVENT_CNO, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
+        CCK_CNO_largeEvents = largeGroupEvents;
+        CCK_CNO_superEvents = superGroupEvents;
         CCK_CNO_smallEvents = smallGroupEvents;
-        load(CCKAD_EVENT_BL, 'groupEvents','smallGroupEvents');
-        CCKAD_BL_largeEvents = groupEvents;
+        load(CCKAD_EVENT_BL, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
+        CCKAD_BL_largeEvents = largeGroupEvents;
+        CCKAD_BL_superEvents = superGroupEvents;
         CCKAD_BL_smallEvents = smallGroupEvents;
-        load(CCKAD_EVENT_CNO, 'groupEvents','smallGroupEvents');
-        CCKAD_CNO_largeEvents = groupEvents;
+        load(CCKAD_EVENT_CNO, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
+        CCKAD_CNO_largeEvents = largeGroupEvents;
+        CCKAD_CNO_superEvents = superGroupEvents;
         CCKAD_CNO_smallEvents = smallGroupEvents;
         %% Color Map
         colorMap(1,:) = [0 0 1];
         colorMap(2,:) = [1 0 0];
         colorMap(3,:) = [0 0 1];
         colorMap(4,:) = [1 0 0];
+        colorSex_CCK_BL = zeros(sum(~cellfun(@isempty,{CCK_BL_largeEvents.s})),3);
+        colorSex_CCK_CNO = zeros(sum(~cellfun(@isempty,{CCK_CNO_largeEvents.s})),3);
+        colorSex_CCKAD_BL = zeros(sum(~cellfun(@isempty,{CCKAD_BL_largeEvents.s})),3);
+        colorSex_CCKAD_CNO = zeros(sum(~cellfun(@isempty,{CCKAD_CNO_largeEvents.s})),3);
+            % get color for dots of female vs male
+            for i = 1:length(CCK_BL_largeEvents)
+                if strcmp(CCK_BL_largeEvents(i).s,'f')
+                    colorSex_CCK_BL(i,:) = [0 0 0];
+                elseif strcmp(CCK_BL_largeEvents(i).s,'m')
+                    colorSex_CCK_BL(i,:) = [1 1 1];
+                end
+            end
+            % get color for dots of female vs male
+            for i = 1:length(CCK_CNO_largeEvents)
+                if strcmp(CCK_CNO_largeEvents(i).s,'f')
+                    colorSex_CCK_CNO(i,:) = [0 0 0];
+                elseif strcmp(CCK_CNO_largeEvents(i).s,'m')
+                    colorSex_CCK_CNO(i,:) = [1 1 1];
+                end
+            end
+                        % get color for dots of female vs male
+            for i = 1:length(CCKAD_BL_largeEvents)
+                if strcmp(CCKAD_BL_largeEvents(i).s,'f')
+                    colorSex_CCKAD_BL(i,:) = [0 0 0];
+                elseif strcmp(CCKAD_BL_largeEvents(i).s,'m')
+                    colorSex_CCKAD_BL(i,:) = [1 1 1];
+                end
+            end
+            % get color for dots of female vs male
+            for i = 1:length(CCKAD_CNO_largeEvents)
+                if strcmp(CCKAD_CNO_largeEvents(i).s,'f')
+                    colorSex_CCKAD_CNO(i,:) = [0 0 0];
+                elseif strcmp(CCKAD_CNO_largeEvents(i).s,'m')
+                    colorSex_CCKAD_CNO(i,:) = [1 1 1];
+                end
+            end
         %% One big plot lareg events
         figure;
         sgtitle({[thisMonth ': Large Calcium Events CCK vs CCKAD'],' '});
@@ -218,10 +372,30 @@ elseif groupModelBoxplots
         xlim([0 5]);
         ylim([ymin ymax]);
         
-        scatter(ones(length(vertcat(CCK_BL_largeEvents.timeFreq)'),1), vertcat(CCK_BL_largeEvents.timeFreq)',[],colorMap(1,:));
-        scatter(2*ones(length(vertcat(CCK_CNO_largeEvents.timeFreq)'),1), vertcat(CCK_CNO_largeEvents.timeFreq)',[],colorMap(2,:));
-        scatter(3*ones(length(vertcat(CCKAD_BL_largeEvents.timeFreq)'),1), vertcat(CCKAD_BL_largeEvents.timeFreq)',[],colorMap(3,:));
-        scatter(4*ones(length(vertcat(CCKAD_CNO_largeEvents.timeFreq)'),1), vertcat(CCKAD_CNO_largeEvents.timeFreq)',[],colorMap(4,:));
+        for idot = 1:length(vertcat(CCK_BL_largeEvents.timeFreq)')
+        scatter(ones(length(vertcat(CCK_BL_largeEvents(idot).timeFreq)'),1), vertcat(CCK_BL_largeEvents(idot).timeFreq)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCK_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCK_CNO_largeEvents.timeFreq)')
+        scatter(2*ones(length(vertcat(CCK_CNO_largeEvents(idot).timeFreq)'),1), vertcat(CCK_CNO_largeEvents(idot).timeFreq)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCK_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCKAD_BL_largeEvents.timeFreq)')
+        scatter(3*ones(length(vertcat(CCKAD_BL_largeEvents(idot).timeFreq)'),1), vertcat(CCKAD_BL_largeEvents(idot).timeFreq)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCKAD_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCKAD_CNO_largeEvents.timeFreq)')
+        scatter(4*ones(length(vertcat(CCKAD_CNO_largeEvents(idot).timeFreq)'),1), vertcat(CCKAD_CNO_largeEvents(idot).timeFreq)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCKAD_CNO(idot,:),...
+                 'MarkerFaceAlpha',0.2);
+        end
         for i = 1:size(CCK_BL_largeEvents,2)
             plot([1 2], [CCK_BL_largeEvents(i).timeFreq CCK_CNO_largeEvents(i).timeFreq],'Color',[0 0 0]+.8);
         end
@@ -267,11 +441,30 @@ elseif groupModelBoxplots
         xticklabels({'CCK','CCKAD'});
         xlim([0 5]);
         ylim([ymin ymax]);
-        
-        scatter(ones(length(vertcat(CCK_BL_largeEvents.auc)'),1), vertcat(CCK_BL_largeEvents.auc)',[],colorMap(1,:));
-        scatter(2*ones(length(vertcat(CCK_CNO_largeEvents.auc)'),1), vertcat(CCK_CNO_largeEvents.auc)',[],colorMap(2,:));
-        scatter(3*ones(length(vertcat(CCKAD_BL_largeEvents.auc)'),1), vertcat(CCKAD_BL_largeEvents.auc)',[],colorMap(3,:));
-        scatter(4*ones(length(vertcat(CCKAD_CNO_largeEvents.auc)'),1), vertcat(CCKAD_CNO_largeEvents.auc)',[],colorMap(4,:));
+        for idot = 1:length(vertcat(CCK_BL_largeEvents.auc)')
+        scatter(ones(length(vertcat(CCK_BL_largeEvents(idot).auc)'),1), vertcat(CCK_BL_largeEvents(idot).auc)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCK_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCK_CNO_largeEvents.auc)')
+        scatter(2*ones(length(vertcat(CCK_CNO_largeEvents(idot).auc)'),1), vertcat(CCK_CNO_largeEvents(idot).auc)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCK_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCKAD_BL_largeEvents.auc)')
+        scatter(3*ones(length(vertcat(CCKAD_BL_largeEvents(idot).auc)'),1), vertcat(CCKAD_BL_largeEvents(idot).auc)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCKAD_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCKAD_CNO_largeEvents.auc)')
+        scatter(4*ones(length(vertcat(CCKAD_CNO_largeEvents(idot).auc)'),1), vertcat(CCKAD_CNO_largeEvents(idot).auc)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCKAD_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
         for i = 1:size(CCK_BL_largeEvents,2)
             plot([1 2], [CCK_BL_largeEvents(i).auc CCK_CNO_largeEvents(i).auc],'Color',[0 0 0]+.8);
         end
@@ -322,18 +515,37 @@ elseif groupModelBoxplots
         xticklabels({'CCK','CCKAD'});
         xlim([0 5]);
         ylim([ymin ymax]);
-        
-        scatter(ones(length(vertcat(CCK_BL_smallEvents.timeFreq)'),1), vertcat(CCK_BL_smallEvents.timeFreq)',[],colorMap(1,:));
-        scatter(2*ones(length(vertcat(CCK_CNO_smallEvents.timeFreq)'),1), vertcat(CCK_CNO_smallEvents.timeFreq)',[],colorMap(2,:));
-        scatter(3*ones(length(vertcat(CCKAD_BL_smallEvents.timeFreq)'),1), vertcat(CCKAD_BL_smallEvents.timeFreq)',[],colorMap(3,:));
-        scatter(4*ones(length(vertcat(CCKAD_CNO_smallEvents.timeFreq)'),1), vertcat(CCKAD_CNO_smallEvents.timeFreq)',[],colorMap(4,:));
+        for idot = 1:length(vertcat(CCK_BL_smallEvents.timeFreq)')
+        scatter(ones(length(vertcat(CCK_BL_smallEvents(idot).timeFreq)'),1), vertcat(CCK_BL_smallEvents(idot).timeFreq)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCK_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCK_CNO_smallEvents.timeFreq)')
+        scatter(2*ones(length(vertcat(CCK_CNO_smallEvents(idot).timeFreq)'),1), vertcat(CCK_CNO_smallEvents(idot).timeFreq)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCK_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCKAD_BL_smallEvents.timeFreq)')
+        scatter(3*ones(length(vertcat(CCKAD_BL_smallEvents(idot).timeFreq)'),1), vertcat(CCKAD_BL_smallEvents(idot).timeFreq)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCKAD_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCKAD_CNO_smallEvents.timeFreq)')
+        scatter(4*ones(length(vertcat(CCKAD_CNO_smallEvents(idot).timeFreq)'),1), vertcat(CCKAD_CNO_smallEvents(idot).timeFreq)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCKAD_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
         for i = 1:size(CCK_BL_smallEvents,2)
             plot([1 2], [CCK_BL_smallEvents(i).timeFreq CCK_CNO_smallEvents(i).timeFreq],'Color',[0 0 0]+.8);
         end
         for i = 1:size(CCKAD_BL_smallEvents,2)
             plot([3 4], [CCKAD_BL_smallEvents(i).timeFreq CCKAD_CNO_smallEvents(i).timeFreq],'Color',[0 0 0]+.8);
         end
-
+        
         legend([lg1,lg2]);
         %% auc
         auc(:,1) = vertcat(CCK_BL_smallEvents.auc)';
@@ -373,18 +585,37 @@ elseif groupModelBoxplots
         xticklabels({'CCK','CCKAD'});
         xlim([0 5]);
         ylim([ymin ymax]);
-        
-        scatter(ones(length(vertcat(CCK_BL_smallEvents.auc)'),1), vertcat(CCK_BL_smallEvents.auc)',[],colorMap(1,:));
-        scatter(2*ones(length(vertcat(CCK_CNO_smallEvents.auc)'),1), vertcat(CCK_CNO_smallEvents.auc)',[],colorMap(2,:));
-        scatter(3*ones(length(vertcat(CCKAD_BL_smallEvents.auc)'),1), vertcat(CCKAD_BL_smallEvents.auc)',[],colorMap(3,:));
-        scatter(4*ones(length(vertcat(CCKAD_CNO_smallEvents.auc)'),1), vertcat(CCKAD_CNO_smallEvents.auc)',[],colorMap(4,:));
+        for idot = 1:length(vertcat(CCK_BL_smallEvents.auc)')
+        scatter(ones(length(vertcat(CCK_BL_smallEvents(idot).auc)'),1), vertcat(CCK_BL_smallEvents(idot).auc)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCK_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCK_CNO_smallEvents.auc)')
+        scatter(2*ones(length(vertcat(CCK_CNO_smallEvents(idot).auc)'),1), vertcat(CCK_CNO_smallEvents(idot).auc)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCK_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCKAD_BL_smallEvents.auc)')
+        scatter(3*ones(length(vertcat(CCKAD_BL_smallEvents(idot).auc)'),1), vertcat(CCKAD_BL_smallEvents(idot).auc)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCKAD_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCKAD_CNO_smallEvents.auc)')
+        scatter(4*ones(length(vertcat(CCKAD_CNO_smallEvents(idot).auc)'),1), vertcat(CCKAD_CNO_smallEvents(idot).auc)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCKAD_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
         for i = 1:size(CCK_BL_smallEvents,2)
             plot([1 2], [CCK_BL_smallEvents(i).auc CCK_CNO_smallEvents(i).auc],'Color',[0 0 0]+.8);
         end
         for i = 1:size(CCKAD_BL_smallEvents,2)
             plot([3 4], [CCKAD_BL_smallEvents(i).auc CCKAD_CNO_smallEvents(i).auc],'Color',[0 0 0]+.8);
         end
-
+        
         legend([lg1,lg2]);
         clear timeFreq ptFreq ct amp auc;
     end %month

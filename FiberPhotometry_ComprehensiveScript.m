@@ -28,8 +28,8 @@ clc;
 %% Set conditions
 MODELS           = {'CCK','CCKAD'}; %WT and AD models
 EXPER_CONDITIONS = {'baseline','CNO'};
-INDICATOR_FOLDER = 'L_hM3D_DioGC_R_hM3D_GFAPGC\';%'hM3D_DioGC\'; 
-MONTHS           = {'3mon','4mon'};
+INDICATOR_FOLDER = 'L_hM3D_DioGC_R_hM3D_GFAPGC\';%'hM3D_DioGC\';%'L_hM3D_DioGC_R_hM3D_GFAPGC\';%'hM3D_DioGC\'; %
+MONTHS           = {'5mon'};
 
 %% Set Paths
 BASEPATH = 'C:\Users\rcbul\OneDrive - University of North Carolina at Chapel Hill\Song_Lab\';
@@ -44,18 +44,21 @@ addpath(genpath(ANALYZED_DATA));
 
 SetGraphDefaults;
 %% Run preprocessing
-%Preprocessing_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER);
+samplingRate = 10;
+Preprocessing_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER, samplingRate);
 %% Run Filtering
 % Filtering_Script; OR FilteringConcat_Script
 %FilteringConcat_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER);
 %% Get std dev and mean for each animal
-%GetStdDev_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER);
+GetStdDev_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER);
 %% Get Events
 %FindEvents_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER);
 %% Powerspectrum
 %getPowerSpectrum(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER);
 %% Get boxplots of CCK cells
-
+if strcmp(INDICATOR_FOLDER,'hM3D_DioGC\')
 getBoxPlots_CaEvents(MODELS,MONTHS,'hM3D_DioGC\');
+elseif strcmp(INDICATOR_FOLDER,'L_hM3D_DioGC_R_hM3D_GFAPGC\')
 % Boxplots of CCK vs Glia
 getBoxPlots_CaEvents_CCKvsGlia(MODELS,MONTHS,'L_hM3D_DioGC_R_hM3D_GFAPGC\');
+end

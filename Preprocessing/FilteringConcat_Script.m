@@ -55,11 +55,18 @@ for imonth = 1:length(MONTHS)
         animalSessionsSearch_CNO = sprintf('CNO_%s_*_data.mat',thisModel);
         allAnimalFolders_CNO = dir(fullfile(thisDir, animalSessionsSearch_CNO));
         SESSIONS_CNO = {allAnimalFolders_CNO.name};
-        
+        previousSession = '';
         for isession = 1:length(SESSIONS_BL)
             thisSession = SESSIONS_BL{isession};
             %take off baseline and filtered.mat
             animalInfo = thisSession(10:end-9);
+            % animal name
+            modelLengthName = length(thisModel);
+            titleSession = animalInfo(modelLengthName+1:modelLengthName+7);
+            
+            if strcmp(titleSession, previousSession)
+                continue;
+            end
             % define directories to load
             THIS_SESSION_BL = [thisDir thisSession];
             THIS_SESSION_CNO = [thisDir 'CNO_' animalInfo '_data.mat'];
@@ -99,24 +106,37 @@ for imonth = 1:length(MONTHS)
                 concat_data.chan2_filt = filter_2sIIR(concat_data.chan2,cutoff_freq,samp_freq,IIR_order,filter_type)+mean(concat_data.chan2(1:100));  %highpass filter
                 %% Plot with filter
                 figure;
-                sgtitle({[thisMonth ': BL + CNO (' strrep(animalInfo,'_',' ') ')'],...
+                sgtitle({[thisMonth ': BL + CNO (' strrep(titleSession,'_',' ') ')'],...
                     [filter_type ' pass filt, order: ' num2str(IIR_order) ', cutoff freq: ' num2str(cutoff_freq)]});
                 % for channel 1
-                subplot(2,1,1);
+                subplot(4,1,1);
                 plot(concat_data.time, concat_data.chan1,'r');
                 hold on;
-                plot(concat_data.time, concat_data.chan1_filt','b');
                 title('Channel 1');
-                legend({'deltaF','Filtered'});
                 box off;
                 ylabel('\Delta F/F (%)');
                 xlabel('Time (ms)');
                 % for channel 2
-                subplot(2,1,2);
+                subplot(4,1,2);
                 plot(concat_data.time, concat_data.chan2,'r');
                 hold on;
-                plot(concat_data.time, concat_data.chan2_filt','b');
                 title('Channel 2');
+                box off;
+                ylabel('\Delta F/F (%)');
+                xlabel('Time (ms)');
+                % channel 1 filtered
+                subplot(4,1,3);
+                plot(concat_data.time, concat_data.chan1_filt','b');
+                hold on;
+                title('Channel 1 Filtered');
+                box off;
+                ylabel('\Delta F/F (%)');
+                xlabel('Time (ms)');
+                % for channel 2 filtered
+                subplot(4,1,4);
+                plot(concat_data.time, concat_data.chan2_filt','b');
+                hold on;
+                title('Channel 2 Filtered');
                 box off;
                 ylabel('\Delta F/F (%)');
                 xlabel('Time (ms)');
@@ -132,7 +152,7 @@ for imonth = 1:length(MONTHS)
                 ca_data.chan2_filt = concat_data.chan2_filt(baseline_length+1:end);
                 save([ANALYZED_DATA INDICATOR_FOLDER thisMonth '/CNO_' animalInfo '_filtered.mat'], 'ca_data');
                 
-                
+                previousSession = titleSession;
             end %session
     end %model
 end %month
