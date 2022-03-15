@@ -261,6 +261,110 @@ if ~groupModelBoxplots
                 'MarkerFaceAlpha',0.2);
             end
             clear timeFreq ptFreq ct amp auc;
+            
+            %% One big plot for super events
+            figure;
+            sgtitle([thisMonth ': super Events - ' thisModel ': Baseline vs CNO']);
+            %% Plot time Freq
+            timeFreq(:,1) = vertcat(BL_superEvents.timeFreq)';
+            timeFreq(:,2) = vertcat(CNO_superEvents.timeFreq)';
+            subplot(2,2,1);
+            boxplot(timeFreq,'Color',colorMap);
+            hold on;
+            ylabel('Frequency (Events/sec)');
+            title('Event Frequency');
+            box off;
+            xticklabels({'Baseline','CNO'});
+            for idot = 1:length(vertcat(BL_superEvents.timeFreq)')
+            scatter(ones(length(vertcat(BL_superEvents(idot).timeFreq)'),1), vertcat(BL_superEvents(idot).timeFreq)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_BL(idot),...
+                'MarkerFaceAlpha',0.2);
+            end
+            for idot = 1:length(vertcat(CNO_superEvents.timeFreq)')
+            scatter(2*ones(length(vertcat(CNO_superEvents(idot).timeFreq)'),1), vertcat(CNO_superEvents(idot).timeFreq)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
+            
+            
+            %% Plot point freq
+            ptFreq(:,1) = vertcat(BL_superEvents.ptFreq)';
+            ptFreq(:,2) = vertcat(CNO_superEvents.ptFreq)';
+            subplot(2,2,2);
+            boxplot(ptFreq,'Color',colorMap);
+            hold on;
+            ylabel('Frequency (Events/samples)');
+            title('Event Frequency Samples');
+            box off;
+            xticklabels({'Baseline','CNO'});
+            scatter(ones(length(vertcat(BL_superEvents.ptFreq)'),1), vertcat(BL_superEvents.ptFreq)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_BL,...
+                'MarkerFaceAlpha',0.2);
+            scatter(2*ones(length(vertcat(CNO_superEvents.ptFreq)'),1), vertcat(CNO_superEvents.ptFreq)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CNO,...
+                'MarkerFaceAlpha',0.2);
+            
+            %% Plot count
+            ct(:,1) = vertcat(BL_superEvents.ct)';
+            ct(:,2) = vertcat(CNO_superEvents.ct)';
+            subplot(2,2,3);
+            boxplot(ct,'Color',colorMap);
+            hold on;
+            ylabel('Count');
+            title('Number of Events');
+            box off;
+            xticklabels({'Baseline','CNO'});
+            for idot = 1:length(vertcat(BL_superEvents.ct)')
+            scatter(ones(length(vertcat(BL_superEvents(idot).ct)'),1), vertcat(BL_superEvents(idot).ct)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
+            for idot = 1:length(vertcat(CNO_superEvents.ct)')
+            scatter(2*ones(length(vertcat(CNO_superEvents(idot).ct)'),1), vertcat(CNO_superEvents(idot).ct)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
+            
+            %% Plot auc
+            auc(:,1) = vertcat(BL_superEvents.auc)';
+            auc(:,2) = vertcat(CNO_superEvents.auc)';
+            subplot(2,2,4);
+            boxplot(auc,'Color',colorMap);
+            hold on;
+            ylabel('AUC');
+            title('AUC of Events');
+            box off;
+            xticklabels({'Baseline','CNO'});
+            for idot = 1:length(vertcat(BL_superEvents.auc)')
+            scatter(ones(length(vertcat(BL_superEvents(idot).auc)'),1), vertcat(BL_superEvents(idot).auc)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
+            for idot = 1:length(vertcat(CNO_superEvents.auc)')
+            scatter(2*ones(length(vertcat(CNO_superEvents(idot).auc)'),1), vertcat(CNO_superEvents(idot).auc)',...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+            end
+            
+            %% Plot amplitudes
+            %         amp(:,1) = vertcat(groupEventsBL.amp)';
+            %         amp(:,2) = vertcat(groupEventsCNO.amp)';
+            %         figure;
+            %         boxplot(amp,'Color',colorMap);
+            %         ylabel('Amplitude');
+            %         title({'Event Amplitude', [thisModel ': Baseline vs CNO']});
+            %         box off;
+            %         xticklabels({'Baseline','CNO'});
+            clear timeFreq ptFreq ct amp auc;
+            
         end %model
     end %month
 elseif groupModelBoxplots
@@ -330,7 +434,151 @@ elseif groupModelBoxplots
                     colorSex_CCKAD_CNO(i,:) = [1 1 1];
                 end
             end
-        %% One big plot lareg events
+        %% One big plot super events
+        figure;
+        sgtitle({[thisMonth ': super Calcium Events CCK vs CCKAD'],' '});
+        %% Plot time Freq
+        timeFreq(:,1) = vertcat(CCK_BL_superEvents.timeFreq)';
+        timeFreq(:,2) = vertcat(CCK_CNO_superEvents.timeFreq)';
+        tF1.max = max(timeFreq,[],'all');
+        tF1.min = min(timeFreq,[],'all');
+        timeFreq2(:,1) = vertcat(CCKAD_BL_superEvents.timeFreq);
+        timeFreq2(:,2) = vertcat(CCKAD_CNO_superEvents.timeFreq);
+        tF2.max = max(timeFreq2,[],'all');
+        tF2.min = min(timeFreq2,[],'all');
+        if tF1.min <= tF2.min
+            ymin = tF1.min;
+        else
+            ymin = tF2.min
+        end
+        if tF1.max >= tF2.max
+            ymax = tF1.max;
+        else
+            ymax = tF2.max;
+        end
+        subplot(1,2,1);
+        %this is dumb but i just need a color matching legend
+        lg1 = plot([100 200 300],[100 100 100],'Color',colorMap(1,:));
+        hold on;
+        lg2 = plot([100 200 300],[100 100 100],'Color',colorMap(2,:));
+        lh = legend('Baseline','CNO');
+        % don't make a legend for h2.
+        % actual data
+        boxplot(timeFreq,'Color',colorMap(1:2,:),'position',[1 2]);
+        xlim([0 5]);
+        boxplot(timeFreq2,'Color',colorMap(3:4,:),'position',[3 4]);
+        
+        ylabel('Frequency (Hz)');
+        title('Frequency');
+        box off;
+        xticks([1.5 3.5]);
+        xticklabels({'CCK','CCKAD'});
+        xlim([0 5]);
+        ylim([ymin ymax]);
+        
+        for idot = 1:length(vertcat(CCK_BL_superEvents.timeFreq)')
+        scatter(ones(length(vertcat(CCK_BL_superEvents(idot).timeFreq)'),1), vertcat(CCK_BL_superEvents(idot).timeFreq)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCK_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCK_CNO_superEvents.timeFreq)')
+        scatter(2*ones(length(vertcat(CCK_CNO_superEvents(idot).timeFreq)'),1), vertcat(CCK_CNO_superEvents(idot).timeFreq)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCK_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCKAD_BL_superEvents.timeFreq)')
+        scatter(3*ones(length(vertcat(CCKAD_BL_superEvents(idot).timeFreq)'),1), vertcat(CCKAD_BL_superEvents(idot).timeFreq)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCKAD_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCKAD_CNO_superEvents.timeFreq)')
+        scatter(4*ones(length(vertcat(CCKAD_CNO_superEvents(idot).timeFreq)'),1), vertcat(CCKAD_CNO_superEvents(idot).timeFreq)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCKAD_CNO(idot,:),...
+                 'MarkerFaceAlpha',0.2);
+        end
+        for i = 1:size(CCK_BL_superEvents,2)
+            plot([1 2], [CCK_BL_superEvents(i).timeFreq CCK_CNO_superEvents(i).timeFreq],'Color',[0 0 0]+.8);
+        end
+        for i = 1:size(CCKAD_BL_superEvents,2)
+            plot([3 4], [CCKAD_BL_superEvents(i).timeFreq CCKAD_CNO_superEvents(i).timeFreq],'Color',[0 0 0]+.8);
+        end
+        legend([lg1,lg2]);
+        %% auc
+        auc(:,1) = vertcat(CCK_BL_superEvents.auc)';
+        auc(:,2) = vertcat(CCK_CNO_superEvents.auc)';
+        Yauc.max = max(auc,[],'all');
+        Yauc.min = min(auc,[],'all');
+        auc2(:,1) = vertcat(CCKAD_BL_superEvents.auc);
+        auc2(:,2) = vertcat(CCKAD_CNO_superEvents.auc);
+        Yauc2.max = max(auc2,[],'all');
+        Yauc2.min = min(auc2,[],'all');
+        if Yauc.min <= Yauc2.min
+            ymin = Yauc.min;
+        else
+            ymin = Yauc2.min;
+        end
+        if Yauc.max >= Yauc2.max
+            ymax = Yauc.max;
+        else
+            ymax = Yauc2.max;
+        end
+        subplot(1,2,2);
+        %this is dumb but i just need a color matching legend
+        lg1 = plot([100 200 300],[100 100 100],'Color',colorMap(1,:));
+        hold on;
+        lg2 = plot([100 200 300],[100 100 100],'Color',colorMap(2,:));
+        lh = legend('Baseline','CNO');
+        % don't make a legend for h2.
+        % actual data
+        boxplot(auc,'Color',colorMap(1:2,:),'position',[1 2]);
+        xlim([0 5]);
+        boxplot(auc2,'Color',colorMap(3:4,:),'position',[3 4]);
+        
+        ylabel('AUC');
+        title('AUC of Events');
+        box off;
+        xticks([1.5 3.5]);
+        xticklabels({'CCK','CCKAD'});
+        xlim([0 5]);
+        ylim([ymin ymax]);
+        for idot = 1:length(vertcat(CCK_BL_superEvents.auc)')
+        scatter(ones(length(vertcat(CCK_BL_superEvents(idot).auc)'),1), vertcat(CCK_BL_superEvents(idot).auc)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCK_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCK_CNO_superEvents.auc)')
+        scatter(2*ones(length(vertcat(CCK_CNO_superEvents(idot).auc)'),1), vertcat(CCK_CNO_superEvents(idot).auc)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCK_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCKAD_BL_superEvents.auc)')
+        scatter(3*ones(length(vertcat(CCKAD_BL_superEvents(idot).auc)'),1), vertcat(CCKAD_BL_superEvents(idot).auc)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCKAD_BL(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for idot = 1:length(vertcat(CCKAD_CNO_superEvents.auc)')
+        scatter(4*ones(length(vertcat(CCKAD_CNO_superEvents(idot).auc)'),1), vertcat(CCKAD_CNO_superEvents(idot).auc)',[],...
+                'MarkerEdgeColor',[0 0 0],...
+                'MarkerFaceColor',colorSex_CCKAD_CNO(idot,:),...
+                'MarkerFaceAlpha',0.2);
+        end
+        for i = 1:size(CCK_BL_superEvents,2)
+            plot([1 2], [CCK_BL_superEvents(i).auc CCK_CNO_superEvents(i).auc],'Color',[0 0 0]+.8);
+        end
+        for i = 1:size(CCKAD_BL_superEvents,2)
+            plot([3 4], [CCKAD_BL_superEvents(i).auc CCKAD_CNO_superEvents(i).auc],'Color',[0 0 0]+.8);
+        end
+        
+        legend([lg1,lg2]);
+        clear timeFreq ptFreq ct amp auc;
+            %% One big plot lareg events
         figure;
         sgtitle({[thisMonth ': Large Calcium Events CCK vs CCKAD'],' '});
         %% Plot time Freq

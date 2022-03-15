@@ -28,7 +28,8 @@ clc;
 %% Set conditions
 MODELS           = {'CCK','CCKAD'}; %WT and AD models
 EXPER_CONDITIONS = {'baseline','CNO'};
-INDICATOR_FOLDER = 'L_hM3D_DioGC_R_hM3D_GFAPGC\';%'hM3D_DioGC\';%'L_hM3D_DioGC_R_hM3D_GFAPGC\';%'hM3D_DioGC\'; %
+INDICATOR_FOLDER1 =  'hM3D_DioGC\'; 
+INDICATOR_FOLDER2 = 'L_hM3D_DioGC_R_hM3D_GFAPGC\';
 MONTHS           = {'5mon'};
 
 %% Set Paths
@@ -45,20 +46,31 @@ addpath(genpath(ANALYZED_DATA));
 SetGraphDefaults;
 %% Run preprocessing
 samplingRate = 10;
-Preprocessing_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER, samplingRate);
-%% Run Filtering
-% Filtering_Script; OR FilteringConcat_Script
-%FilteringConcat_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER);
-%% Get std dev and mean for each animal
-GetStdDev_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER);
-%% Get Events
-%FindEvents_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER);
-%% Powerspectrum
+%plotDeltaF(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER, samplingRate)
+% Preprocessing_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER1, samplingRate);
+% Preprocessing_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER2, samplingRate);
+% %% Run Filtering
+% % Filtering_Script; OR FilteringConcat_Script
+% % FilteringTestScript(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER)
+% FilteringConcat_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER1);
+% FilteringConcat_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER2);
+% %% Get std dev and mean for each animal
+% GetStdDev_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER1);
+% GetStdDev_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER2);
+% %% Get Events
+% FindEvents_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER1);
+% FindEvents_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER2);
+% %% Powerspectrum
 %getPowerSpectrum(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER);
 %% Get boxplots of CCK cells
-if strcmp(INDICATOR_FOLDER,'hM3D_DioGC\')
-getBoxPlots_CaEvents(MODELS,MONTHS,'hM3D_DioGC\');
-elseif strcmp(INDICATOR_FOLDER,'L_hM3D_DioGC_R_hM3D_GFAPGC\')
-% Boxplots of CCK vs Glia
-getBoxPlots_CaEvents_CCKvsGlia(MODELS,MONTHS,'L_hM3D_DioGC_R_hM3D_GFAPGC\');
-end
+
+getBoxPlots_CaEvents_all(MONTHS,INDICATOR_FOLDER1, INDICATOR_FOLDER2);
+
+% 
+% if strcmp(INDICATOR_FOLDER,'hM3D_DioGC\')
+% getBoxPlots_CaEvents(MODELS,MONTHS,'hM3D_DioGC\');
+% elseif strcmp(INDICATOR_FOLDER,'L_hM3D_DioGC_R_hM3D_GFAPGC\')
+% % Boxplots of CCK vs Glia
+% getBoxPlots_CaEvents_CCKvsGlia(MODELS,MONTHS,'L_hM3D_DioGC_R_hM3D_GFAPGC\');
+% end
+

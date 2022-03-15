@@ -106,13 +106,15 @@ for imonth = 1:length(MONTHS)
                 load([ANALYZED_DATA INDICATOR_FOLDER thisMonth '\' thisSession], 'ca_data');
                 ca_data.chan1 = ca_data.chan1_filt;
                 ca_data.chan2 = ca_data.chan2_filt;
+               
                 % thresholding data (std dev)
                 animal_info = thisSession(length(thisExperCondition)+2:end-13);
                 stdDev_file = sprintf('%s_stdDev.mat',animal_info);
-                load(stdDev_file,...
-                    'SmallSD','SmallMean','SmallThr',...
-                    'LargeSD','LargeMean','LargeThr',...
-                    'SuperSD','SuperMean','SuperThr');
+                STDDEV_FULLFILE = [ANALYZED_DATA INDICATOR_FOLDER thisMonth '\' stdDev_file];
+                load(STDDEV_FULLFILE,...
+                    'SmallMean','SmallThr',...
+                    'LargeMean','LargeThr',...
+                    'SuperMean','SuperThr');
                 %% Find events  (over butterworth filtered data)
                 
                 SuperEvents.chan1_idx = find(ca_data.chan1 >= (SuperMean.chan1+SuperThr.chan1));
@@ -142,67 +144,67 @@ for imonth = 1:length(MONTHS)
                 %% Test plot small events
                 % for channel 1
                 subplot(3,2,1);
-                plot(ca_data.time, ca_data.chan1_filt','b');
+                plot(ca_data.chan1_time, ca_data.chan1_filt','b');
                 hold on;
-                scatter(ca_data.time(SmallEvents.chan1_idx),SmallEvents.chan1_values,'k');
+                scatter(ca_data.chan1_time(SmallEvents.chan1_idx),SmallEvents.chan1_values,'k');
                 title('Small Events: Channel 1');
                 box off;
                 ylabel('Filtered \Delta F/F (%)');
                 xlabel('Time (ms)');
-                xlim([0 ca_data.time(end)]);
+                xlim([0 ca_data.chan1_time(end)]);
                 % for channel 2
                 subplot(3,2,2);
-                plot(ca_data.time, ca_data.chan2_filt','b');
+                plot(ca_data.chan2_time, ca_data.chan2_filt','b');
                 hold on
-                scatter(ca_data.time(SmallEvents.chan2_idx),SmallEvents.chan2_values,'k');
+                scatter(ca_data.chan2_time(SmallEvents.chan2_idx),SmallEvents.chan2_values,'k');
                 title('Small Events: Channel 2');
                 box off;
                 ylabel('Filtered \Delta F/F (%)');
                 xlabel('Time (ms)');
-                xlim([0 ca_data.time(end)]);
+                xlim([0 ca_data.chan2_time(end)]);
                 
                 %% Test plot large events
                 % for channel 1
                 subplot(3,2,3);
-                plot(ca_data.time, ca_data.chan1_filt','b');
+                plot(ca_data.chan1_time, ca_data.chan1_filt','b');
                 hold on;
-                scatter(ca_data.time(LargeEvents.chan1_idx),LargeEvents.chan1_values,'k');
+                scatter(ca_data.chan1_time(LargeEvents.chan1_idx),LargeEvents.chan1_values,'k');
                 title('Large Events: Channel 1');
                 box off;
                 ylabel('Filtered \Delta F/F (%)');
                 xlabel('Time (ms)');
-                xlim([0 ca_data.time(end)]);
+                xlim([0 ca_data.chan1_time(end)]);
                 % for channel 2
                 subplot(3,2,4);
-                plot(ca_data.time, ca_data.chan2_filt','b');
+                plot(ca_data.chan2_time, ca_data.chan2_filt','b');
                 hold on
-                scatter(ca_data.time(LargeEvents.chan2_idx),LargeEvents.chan2_values,'k');
+                scatter(ca_data.chan2_time(LargeEvents.chan2_idx),LargeEvents.chan2_values,'k');
                 title('Large Events: Channel 2');
                 box off;
                 ylabel('Filtered \Delta F/F (%)');
                 xlabel('Time (ms)');
-                xlim([0 ca_data.time(end)]);
+                xlim([0 ca_data.chan2_time(end)]);
                 %% Super Events
                 % for channel 1
                 subplot(3,2,5);
-                plot(ca_data.time, ca_data.chan1_filt','b');
+                plot(ca_data.chan1_time, ca_data.chan1_filt','b');
                 hold on
-                scatter(ca_data.time(SuperEvents.chan1_idx),SuperEvents.chan1_values,'k');
+                scatter(ca_data.chan1_time(SuperEvents.chan1_idx),SuperEvents.chan1_values,'k');
                 title('Super Events: Channel 1');
                 box off;
                 ylabel('Filtered \Delta F/F (%)');
                 xlabel('Time (ms)');
-                xlim([0 ca_data.time(end)]);
+                xlim([0 ca_data.chan1_time(end)]);
                 % for channel 2
                 subplot(3,2,6);
-                plot(ca_data.time, ca_data.chan2_filt','b');
+                plot(ca_data.chan2_time, ca_data.chan2_filt','b');
                 hold on
-                scatter(ca_data.time(SuperEvents.chan2_idx),SuperEvents.chan2_values,'k');
+                scatter(ca_data.chan2_time(SuperEvents.chan2_idx),SuperEvents.chan2_values,'k');
                 title('Super Events: Channel 2');
                 box off;
                 ylabel('Filtered \Delta F/F (%)');
                 xlabel('Time (ms)');
-                xlim([0 ca_data.time(end)]);
+                xlim([0 ca_data.chan2_time(end)]);
                 
                 %% Super Event Characterisitcs - Count, Freq Time, Freq Sampled Points, Amplitude, Area under curve
                 % number of events
@@ -210,11 +212,11 @@ for imonth = 1:length(MONTHS)
                 superChrts.chan2_ct = length(SuperEvents.chan2_idx);
                 % frequency of events (divide by amount of seconds) (time
                 % in ms --> sec)
-                superChrts.chan1_timefreq = superChrts.chan1_ct/(ca_data.time(end)/1000);
-                superChrts.chan2_timefreq = superChrts.chan2_ct/(ca_data.time(end)/1000);
+                superChrts.chan1_timefreq = superChrts.chan1_ct/(ca_data.chan1_time(end)/1000);
+                superChrts.chan2_timefreq = superChrts.chan2_ct/(ca_data.chan2_time(end)/1000);
                 % frequency of events (divide by amount of points)
-                superChrts.chan1_ptfreq = superChrts.chan1_ct/length(ca_data.time);
-                superChrts.chan2_ptfreq = superChrts.chan2_ct/length(ca_data.time);
+                superChrts.chan1_ptfreq = superChrts.chan1_ct/length(ca_data.chan1_time);
+                superChrts.chan2_ptfreq = superChrts.chan2_ct/length(ca_data.chan2_time);
                 % amplitude of events
                 superChrts.chan1_amp = SuperEvents.chan1_values;
                 superChrts.chan2_amp = SuperEvents.chan2_values;
@@ -227,11 +229,11 @@ for imonth = 1:length(MONTHS)
                 largeChrts.chan2_ct = length(LargeEvents.chan2_idx);
                 % frequency of events (divide by amount of seconds) (time
                 % in ms --> sec)
-                largeChrts.chan1_timefreq = largeChrts.chan1_ct/(ca_data.time(end)/1000);
-                largeChrts.chan2_timefreq = largeChrts.chan2_ct/(ca_data.time(end)/1000);
+                largeChrts.chan1_timefreq = largeChrts.chan1_ct/(ca_data.chan1_time(end)/1000);
+                largeChrts.chan2_timefreq = largeChrts.chan2_ct/(ca_data.chan2_time(end)/1000);
                 % frequency of events (divide by amount of points)
-                largeChrts.chan1_ptfreq = largeChrts.chan1_ct/length(ca_data.time);
-                largeChrts.chan2_ptfreq = largeChrts.chan2_ct/length(ca_data.time);
+                largeChrts.chan1_ptfreq = largeChrts.chan1_ct/length(ca_data.chan1_time);
+                largeChrts.chan2_ptfreq = largeChrts.chan2_ct/length(ca_data.chan2_time);
                 % amplitude of events
                 largeChrts.chan1_amp = LargeEvents.chan1_values;
                 largeChrts.chan2_amp = LargeEvents.chan2_values;
@@ -244,11 +246,11 @@ for imonth = 1:length(MONTHS)
                 smallChrts.chan2_ct = length(SmallEvents.chan2_idx);
                 % frequency of events (divide by amount of seconds) (time
                 % in ms --> sec)
-                smallChrts.chan1_timefreq = smallChrts.chan1_ct/(ca_data.time(end)/1000);
-                smallChrts.chan2_timefreq = smallChrts.chan2_ct/(ca_data.time(end)/1000);
+                smallChrts.chan1_timefreq = smallChrts.chan1_ct/(ca_data.chan1_time(end)/1000);
+                smallChrts.chan2_timefreq = smallChrts.chan2_ct/(ca_data.chan2_time(end)/1000);
                 % frequency of events (divide by amount of points)
-                smallChrts.chan1_ptfreq = smallChrts.chan1_ct/length(ca_data.time);
-                smallChrts.chan2_ptfreq = smallChrts.chan2_ct/length(ca_data.time);
+                smallChrts.chan1_ptfreq = smallChrts.chan1_ct/length(ca_data.chan1_time);
+                smallChrts.chan2_ptfreq = smallChrts.chan2_ct/length(ca_data.chan2_time);
                 % amplitude of events
                 smallChrts.chan1_amp = SmallEvents.chan1_values;
                 smallChrts.chan2_amp = SmallEvents.chan2_values;

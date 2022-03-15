@@ -118,6 +118,295 @@ for imonth = 1:length(MONTHS)
         end
     end
     
+        %% One plot super event Frequency (Neuron vs Glia)
+    figure;
+    sgtitle({[thisMonth ': super Calcium Events CCK vs CCKAD'],'Frequency'});
+    % Plot Freq - Neurons
+    timeFreq(:,1) = vertcat(IN_CCK_BL_superEvents.timeFreq)';
+    timeFreq(:,2) = vertcat(IN_CCK_CNO_superEvents.timeFreq)';
+    tF1.max = max(timeFreq,[],'all');
+    tF1.min = min(timeFreq,[],'all');
+    timeFreq2(:,1) = vertcat(IN_CCKAD_BL_superEvents.timeFreq);
+    timeFreq2(:,2) = vertcat(IN_CCKAD_CNO_superEvents.timeFreq);
+    tF2.max = max(timeFreq2,[],'all');
+    tF2.min = min(timeFreq2,[],'all');
+    if tF1.min <= tF2.min
+        ymin = tF1.min;
+    else
+        ymin = tF2.min;
+    end
+    if tF1.max >= tF2.max
+        ymax = tF1.max;
+    else
+        ymax = tF2.max;
+    end
+    subplot(1,2,1);
+    %this is dumb but i just need a color matching legend
+    lg1 = plot([100 200 300],[100 100 100],'Color',colorMap(1,:));
+    hold on;
+    lg2 = plot([100 200 300],[100 100 100],'Color',colorMap(2,:));
+    lh = legend('Baseline','CNO');
+    % don't make a legend for h2.
+    % actual data
+    boxplot(timeFreq,'Color',colorMap(1:2,:),'position',[1 2]);
+    xlim([0 5]);
+    boxplot(timeFreq2,'Color',colorMap(3:4,:),'position',[3 4]);
+    
+    ylabel('Frequency (Hz)');
+    title('CCK Neurons');
+    box off;
+    xticks([1.5 3.5]);
+    xticklabels({'CCK','CCKAD'});
+    xlim([0 5]);
+    ylim([ymin ymax]);
+    
+    for idot = 1:length(vertcat(IN_CCK_BL_superEvents.timeFreq)')
+        scatter(ones(length(vertcat(IN_CCK_BL_superEvents(idot).timeFreq)'),1), vertcat(IN_CCK_BL_superEvents(idot).timeFreq)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCK_BL(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    for idot = 1:length(vertcat(IN_CCK_CNO_superEvents.timeFreq)')
+        scatter(2*ones(length(vertcat(IN_CCK_CNO_superEvents(idot).timeFreq)'),1), vertcat(IN_CCK_CNO_superEvents(idot).timeFreq)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCK_CNO(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    for idot = 1:length(vertcat(IN_CCKAD_BL_superEvents.timeFreq)')
+        scatter(3*ones(length(vertcat(IN_CCKAD_BL_superEvents(idot).timeFreq)'),1), vertcat(IN_CCKAD_BL_superEvents(idot).timeFreq)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCKAD_BL(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    for idot = 1:length(vertcat(IN_CCKAD_CNO_superEvents.timeFreq)')
+        scatter(4*ones(length(vertcat(IN_CCKAD_CNO_superEvents(idot).timeFreq)'),1), vertcat(IN_CCKAD_CNO_superEvents(idot).timeFreq)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCKAD_CNO(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    % Add lines to boxplots connecting points
+    for i = 1:size(IN_CCK_BL_superEvents,2)
+        plot([1 2], [IN_CCK_BL_superEvents(i).timeFreq IN_CCK_CNO_superEvents(i).timeFreq],'Color',[0 0 0]+.8);
+    end
+    for i = 1:size(IN_CCKAD_BL_superEvents,2)
+        plot([3 4], [IN_CCKAD_BL_superEvents(i).timeFreq IN_CCKAD_CNO_superEvents(i).timeFreq],'Color',[0 0 0]+.8);
+    end
+    legend([lg1,lg2]);
+    %%%%%%%% Glia
+    timeFreq(:,1) = vertcat(Gl_CCK_BL_superEvents.timeFreq)';
+    timeFreq(:,2) = vertcat(Gl_CCK_CNO_superEvents.timeFreq)';
+    tF1.max = max(timeFreq,[],'all');
+    tF1.min = min(timeFreq,[],'all');
+    timeFreq2(:,1) = vertcat(Gl_CCKAD_BL_superEvents.timeFreq);
+    timeFreq2(:,2) = vertcat(Gl_CCKAD_CNO_superEvents.timeFreq);
+    tF2.max = max(timeFreq2,[],'all');
+    tF2.min = min(timeFreq2,[],'all');
+    if tF1.min <= tF2.min
+        ymin = tF1.min;
+    else
+        ymin = tF2.min;
+    end
+    if tF1.max >= tF2.max
+        ymax = tF1.max;
+    else
+        ymax = tF2.max;
+    end
+    subplot(1,2,2);
+    %this is dumb but i just need a color matching legend
+    lg1 = plot([100 200 300],[100 100 100],'Color',colorMap(1,:));
+    hold on;
+    lg2 = plot([100 200 300],[100 100 100],'Color',colorMap(2,:));
+    lh = legend('Baseline','CNO');
+    % don't make a legend for h2.
+    % actual data
+    boxplot(timeFreq,'Color',colorMap(1:2,:),'position',[1 2]);
+    xlim([0 5]);
+    boxplot(timeFreq2,'Color',colorMap(3:4,:),'position',[3 4]);
+    
+    ylabel('Frequency (Hz)');
+    title('Glia');
+    box off;
+    xticks([1.5 3.5]);
+    xticklabels({'CCK','CCKAD'});
+    xlim([0 5]);
+    ylim([ymin ymax]);
+    for idot = 1:length(vertcat(Gl_CCK_BL_superEvents.timeFreq)')
+        scatter(ones(length(vertcat(Gl_CCK_BL_superEvents(idot).timeFreq)'),1), vertcat(Gl_CCK_BL_superEvents(idot).timeFreq)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCK_BL(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    for idot = 1:length(vertcat(Gl_CCK_CNO_superEvents.timeFreq)')
+        scatter(2*ones(length(vertcat(Gl_CCK_CNO_superEvents(idot).timeFreq)'),1), vertcat(Gl_CCK_CNO_superEvents(idot).timeFreq)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCK_CNO(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    for idot = 1:length(vertcat(Gl_CCKAD_BL_superEvents.timeFreq)')
+        scatter(3*ones(length(vertcat(Gl_CCKAD_BL_superEvents(idot).timeFreq)'),1), vertcat(Gl_CCKAD_BL_superEvents(idot).timeFreq)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCKAD_BL(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    for idot = 1:length(vertcat(Gl_CCKAD_CNO_superEvents.timeFreq)')
+        scatter(4*ones(length(vertcat(Gl_CCKAD_CNO_superEvents(idot).timeFreq)'),1), vertcat(Gl_CCKAD_CNO_superEvents(idot).timeFreq)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCKAD_CNO(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    % Add lines to boxplots connecting points
+    for i = 1:size(Gl_CCK_BL_superEvents,2)
+        plot([1 2], [Gl_CCK_BL_superEvents(i).timeFreq Gl_CCK_CNO_superEvents(i).timeFreq],'Color',[0 0 0]+.8);
+    end
+    for i = 1:size(Gl_CCKAD_BL_superEvents,2)
+        plot([3 4], [Gl_CCKAD_BL_superEvents(i).timeFreq Gl_CCKAD_CNO_superEvents(i).timeFreq],'Color',[0 0 0]+.8);
+    end
+    legend([lg1,lg2]);
+    %% AUC
+    figure;
+    sgtitle({[thisMonth ': super Calcium Events CCK vs CCKAD'],'AUC'});
+    % neurons
+    auc(:,1) = vertcat(IN_CCK_BL_superEvents.auc)';
+    auc(:,2) = vertcat(IN_CCK_CNO_superEvents.auc)';
+    Yauc.max = max(auc,[],'all');
+    Yauc.min = min(auc,[],'all');
+    auc2(:,1) = vertcat(IN_CCKAD_BL_superEvents.auc);
+    auc2(:,2) = vertcat(IN_CCKAD_CNO_superEvents.auc);
+    Yauc2.max = max(auc2,[],'all');
+    Yauc2.min = min(auc2,[],'all');
+    if Yauc.min <= Yauc2.min
+        ymin = Yauc.min;
+    else
+        ymin = Yauc2.min;
+    end
+    if Yauc.max >= Yauc2.max
+        ymax = Yauc.max;
+    else
+        ymax = Yauc2.max;
+    end
+    subplot(1,2,1);
+    %this is dumb but i just need a color matching legend
+    lg1 = plot([100 200 300],[100 100 100],'Color',colorMap(1,:));
+    hold on;
+    lg2 = plot([100 200 300],[100 100 100],'Color',colorMap(2,:));
+    lh = legend('Baseline','CNO');
+    % don't make a legend for h2.
+    % actual data
+    boxplot(auc,'Color',colorMap(1:2,:),'position',[1 2]);
+    xlim([0 5]);
+    boxplot(auc2,'Color',colorMap(3:4,:),'position',[3 4]);
+    
+    ylabel('AUC');
+    title('CCK Neurons');
+    box off;
+    xticks([1.5 3.5]);
+    xticklabels({'CCK','CCKAD'});
+    xlim([0 5]);
+    ylim([ymin ymax]);
+    for idot = 1:length(vertcat(IN_CCK_BL_superEvents.auc)')
+        scatter(ones(length(vertcat(IN_CCK_BL_superEvents(idot).auc)'),1), vertcat(IN_CCK_BL_superEvents(idot).auc)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCK_BL(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    for idot = 1:length(vertcat(IN_CCK_CNO_superEvents.auc)')
+        scatter(2*ones(length(vertcat(IN_CCK_CNO_superEvents(idot).auc)'),1), vertcat(IN_CCK_CNO_superEvents(idot).auc)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCK_CNO(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    for idot = 1:length(vertcat(IN_CCKAD_BL_superEvents.auc)')
+        scatter(3*ones(length(vertcat(IN_CCKAD_BL_superEvents(idot).auc)'),1), vertcat(IN_CCKAD_BL_superEvents(idot).auc)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCKAD_BL(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    for idot = 1:length(vertcat(IN_CCKAD_CNO_superEvents.auc)')
+        scatter(4*ones(length(vertcat(IN_CCKAD_CNO_superEvents(idot).auc)'),1), vertcat(IN_CCKAD_CNO_superEvents(idot).auc)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCKAD_CNO(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    % Add lines to boxplots connecting points
+    for i = 1:size(IN_CCK_BL_superEvents,2)
+        plot([1 2], [IN_CCK_BL_superEvents(i).auc IN_CCK_CNO_superEvents(i).auc],'Color',[0 0 0]+.8);
+    end
+    for i = 1:size(IN_CCKAD_BL_superEvents,2)
+        plot([3 4], [IN_CCKAD_BL_superEvents(i).auc IN_CCKAD_CNO_superEvents(i).auc],'Color',[0 0 0]+.8);
+    end
+    legend([lg1,lg2]);
+    % glia
+    auc(:,1) = vertcat(Gl_CCK_BL_superEvents.auc)';
+    auc(:,2) = vertcat(Gl_CCK_CNO_superEvents.auc)';
+    Yauc.max = max(auc,[],'all');
+    Yauc.min = min(auc,[],'all');
+    auc2(:,1) = vertcat(Gl_CCKAD_BL_superEvents.auc);
+    auc2(:,2) = vertcat(Gl_CCKAD_CNO_superEvents.auc);
+    Yauc2.max = max(auc2,[],'all');
+    Yauc2.min = min(auc2,[],'all');
+    if Yauc.min <= Yauc2.min
+        ymin = Yauc.min;
+    else
+        ymin = Yauc2.min;
+    end
+    if Yauc.max >= Yauc2.max
+        ymax = Yauc.max;
+    else
+        ymax = Yauc2.max;
+    end
+    subplot(1,2,2);
+    %this is dumb but i just need a color matching legend
+    lg1 = plot([100 200 300],[100 100 100],'Color',colorMap(1,:));
+    hold on;
+    lg2 = plot([100 200 300],[100 100 100],'Color',colorMap(2,:));
+    lh = legend('Baseline','CNO');
+    % don't make a legend for h2.
+    % actual data
+    boxplot(auc,'Color',colorMap(1:2,:),'position',[1 2]);
+    xlim([0 5]);
+    boxplot(auc2,'Color',colorMap(3:4,:),'position',[3 4]);
+    
+    ylabel('AUC');
+    title('Glia');
+    box off;
+    xticks([1.5 3.5]);
+    xticklabels({'CCK','CCKAD'});
+    xlim([0 5]);
+    ylim([ymin ymax]);
+    for idot = 1:length(vertcat(Gl_CCK_BL_superEvents.auc)')
+        scatter(ones(length(vertcat(Gl_CCK_BL_superEvents(idot).auc)'),1), vertcat(Gl_CCK_BL_superEvents(idot).auc)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCK_BL(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    for idot = 1:length(vertcat(Gl_CCK_CNO_superEvents.auc)')
+        scatter(2*ones(length(vertcat(Gl_CCK_CNO_superEvents(idot).auc)'),1), vertcat(Gl_CCK_CNO_superEvents(idot).auc)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCK_CNO(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    for idot = 1:length(vertcat(Gl_CCKAD_BL_superEvents.auc)')
+        scatter(3*ones(length(vertcat(Gl_CCKAD_BL_superEvents(idot).auc)'),1), vertcat(Gl_CCKAD_BL_superEvents(idot).auc)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCKAD_BL(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    for idot = 1:length(vertcat(Gl_CCKAD_CNO_superEvents.auc)')
+        scatter(4*ones(length(vertcat(Gl_CCKAD_CNO_superEvents(idot).auc)'),1), vertcat(Gl_CCKAD_CNO_superEvents(idot).auc)',[],...
+            'MarkerEdgeColor',[0 0 0],...
+            'MarkerFaceColor',colorSex_CCKAD_CNO(idot,:),...
+            'MarkerFaceAlpha',0.2);
+    end
+    % Add lines to boxplots connecting points
+    for i = 1:size(IN_CCK_BL_superEvents,2)
+        plot([1 2], [Gl_CCK_BL_superEvents(i).auc Gl_CCK_CNO_superEvents(i).auc],'Color',[0 0 0]+.8);
+    end
+    for i = 1:size(IN_CCKAD_BL_superEvents,2)
+        plot([3 4], [Gl_CCKAD_BL_superEvents(i).auc Gl_CCKAD_CNO_superEvents(i).auc],'Color',[0 0 0]+.8);
+    end
+    legend([lg1,lg2]);
+    
+    clear timeFreq ptFreq ct amp auc;
     %% One plot large event Frequency (Neuron vs Glia)
     figure;
     sgtitle({[thisMonth ': Large Calcium Events CCK vs CCKAD'],'Frequency'});

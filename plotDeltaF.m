@@ -1,4 +1,4 @@
-function [] = Preprocessing_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER, samplingRate)
+function [] = plotDeltaF(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER, samplingRate)
 % PURPOSE
 %     Preprocess calcium recording from CCK interneurons in dentate gyrus of
 %     hippocampus. Load in raw data and save in mat structs for easy access
@@ -21,24 +21,14 @@ function [] = Preprocessing_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOL
 %                                            ... > CCKAD_f6_827 > ...
 
 % OUTPUTS
-%   - Calcium example traces for each session, reference, gcamp signal, and
-%   deltaF
-%   - mat files with data for each experimental session labeled as such:
-%       baseline_CCK_sessionInfo.mat
-%           this contains a ca_data struct for chan1 and chan2:
-%                                  .time
-%                                  .chan1_ref   (reference signal)
-%                                  .chan1_gcamp (raw gcamp signal)
-%                                  .chan1_ratio (gcamp to ref signal)
-%                                  .chan1_dg    (deltaF/F)
+%   - Calcium example traces for each session
 % HISTORY
-%   2.1.2022 Reagan Bullins
+%   3.10.2022 Reagan Bullins
 %% Set Paths
 BASEPATH = 'C:\Users\rcbul\OneDrive - University of North Carolina at Chapel Hill\Song_Lab\';
 CODE_REAGAN = [BASEPATH 'Code\'];
 RAW_DATA = [BASEPATH 'Data\'];
 ANALYZED_DATA= [BASEPATH 'Analyzed_Data\'];
-FIGURES = [BASEPATH 'Figures\'];
 
 addpath(genpath(CODE_REAGAN));
 addpath(genpath(RAW_DATA));
@@ -93,9 +83,9 @@ for imonth = 1:length(MONTHS)
                     % Identify excel sheet to load in
                     THIS_CA_DATA = [RAW_DATA DATA_FOLDER INDICATOR_FOLDER THIS_SESSION_DIR 'Fluorescence.csv'];
                     %% Get Data Struct
-                    ca_data = getDataStruct(THIS_CA_DATA, samplingRate);
-                    ca_data.chan1_time = ca_data.time;
-                    ca_data.chan2_time = ca_data.time;
+                    ca_data = getDataStruct(THIS_CA_DATA, samplingRate,'analyzeAll',1);
+                    ca_data.chan1_time  = ca_data.time;
+                    ca_data.chan2_time  = ca_data.time;
                 else % recording left and right at different times
                     if recLeft
                         sessionDirLeft = [thisDir thisSession '\'];
@@ -119,17 +109,17 @@ for imonth = 1:length(MONTHS)
                     THIS_CA_DATA_RIGHT = [RAW_DATA DATA_FOLDER INDICATOR_FOLDER THIS_SESSION_DIR_RIGHT 'Fluorescence.csv'];
                     THIS_CA_DATA_LEFT = [RAW_DATA DATA_FOLDER INDICATOR_FOLDER THIS_SESSION_DIR_LEFT 'Fluorescence.csv'];
                     %% Get Data Struct
-                    ca_data_left = getDataStruct(THIS_CA_DATA_LEFT, samplingRate,'recSide',"left");
-                    ca_data_right = getDataStruct(THIS_CA_DATA_RIGHT,samplingRate,'recSide',"right");
+                    ca_data_left = getDataStruct(THIS_CA_DATA_LEFT, samplingRate,'recSide',"left",'analyzeAll',1);
+                    ca_data_right = getDataStruct(THIS_CA_DATA_RIGHT,samplingRate,'recSide',"right",'analyzeAll',1);
                     %% Reconstruct struct
                     % left side channel 1
-                    ca_data.chan1_time = ca_data_left.time;
+                    ca_data.chan1_time  = ca_data_left.time;
                     ca_data.chan1_ref   = ca_data_left.chan1_ref;
                     ca_data.chan1_gcamp = ca_data_left.chan1_gcamp;
                     ca_data.chan1_ratio = ca_data_left.chan1_ratio;
                     ca_data.chan1_dg    = ca_data_left.chan1_dg;
                     % right side channel 2
-                    ca_data.chan2_time = ca_data_right.time;
+                    ca_data.chan2_time  = ca_data_right.time;
                     ca_data.chan2_ref   = ca_data_right.chan2_ref;
                     ca_data.chan2_gcamp = ca_data_right.chan2_gcamp;
                     ca_data.chan2_ratio = ca_data_right.chan2_ratio;
@@ -138,56 +128,24 @@ for imonth = 1:length(MONTHS)
                 end
                 %% Plot
                 % Plot raw example trace for channel 1
-                traceFig = figure;
+                figure;
                 sgtitle([thisMonth ': ' thisExperCondition ' & ' thisModel ' (' strrep(titleSession(lengthModelName+1:end),'_',' ') ')']);
-                subplot(3,2,1);
-                plot(ca_data.chan1_time,ca_data.chan1_gcamp);
-                title('Channel 1: Raw Calcium Signal');
-                ylabel('Fluorescence');
-                xlabel('Time (ms)');
-                xlim([0 ca_data.chan1_time(end)]);
-                box off;
-                subplot(3,2,3);
-                plot(ca_data.chan1_time,ca_data.chan1_ref);
-                title('Channel 1: Reference');
-                ylabel('Fluorescence');
-                xlabel('Time (ms)');
-                xlim([0 ca_data.chan1_time(end)]);
-                box off;
-                subplot(3,2,5);
+   
+                subplot(2,1,1);
                 plot(ca_data.chan1_time,ca_data.chan1_dg);
                 title('Channel 1: \Delta F/F');
                 ylabel('\Delta F/F (%)');
                 xlabel('Time (ms)');
                 xlim([0 ca_data.chan1_time(end)]);
                 box off;
-                subplot(3,2,2);
-                plot(ca_data.chan2_time,ca_data.chan2_gcamp);
-                title('Channel 2: Raw Calcium Signal');
-                ylabel('Fluorescence');
-                xlabel('Time (ms)');
-                xlim([0 ca_data.chan2_time(end)]);
-                box off;
-                subplot(3,2,4);
-                plot(ca_data.chan2_time,ca_data.chan2_ref);
-                title('Channel 2: Reference');
-                ylabel('Fluorescence');
-                xlabel('Time (ms)');
-                xlim([0 ca_data.chan2_time(end)]);
-                box off;
-                subplot(3,2,6);
+                
+                subplot(2,1,2);
                 plot(ca_data.chan2_time,ca_data.chan2_dg);
                 title('Channel 2: \Delta F/F');
                 ylabel('\Delta F/F (%)');
                 xlabel('Time (ms)');
                 xlim([0 ca_data.chan2_time(end)]);
                 box off;
-                %% Save session data
-                save([ANALYZED_DATA INDICATOR_FOLDER thisMonth '/' thisExperCondition '_' thisSession '_data.mat'], 'ca_data');
-                %% Save figure
-                savefig([FIGURES INDICATOR_FOLDER thisMonth '/Preprocessing/RawTraces/' thisExperCondition '_' titleSession '_Traces.fig']);
-                set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
-                saveas(traceFig,[FIGURES INDICATOR_FOLDER thisMonth '/Preprocessing/RawTraces/' thisExperCondition '_' titleSession '_Traces.png']);
                 
                 previousSession = titleSession;
             end %session

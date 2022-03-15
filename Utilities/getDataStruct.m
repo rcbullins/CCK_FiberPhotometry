@@ -21,16 +21,27 @@ function [ca_data] = getDataStruct(csv_data_path,samplingRate, varargin)
 %% Input Parser
 p = inputParser;
 addParameter(p,'recSide','both',@isstring);
+addParameter(p,'minAnalyze',20,@isnumeric);
+addParameter(p,'analyzeAll',0,@isnumeric);
 parse(p,varargin{:});
 recSide     = p.Results.recSide;
+minAnalyze  = p.Results.minAnalyze;
+analyzeAll  = p.Results.analyzeAll;
 
-%% how much of recording time to save (last 20 minutes)
-minAnalyze = 20;
+%% how much of recording time to save 
+if analyzeAll
+    minAnalyze = 100000; %extreme number to analyze, so will just analyze what it can
+    samplingPoints = (10*60*minAnalyze)+(1*samplingRate);
+elseif ~analyzeAll
+    samplingPoints = (10*60*minAnalyze)+(1*samplingRate);
+end
 
-samplingPoints = (10*60*20)+(1*samplingRate);
 if strcmp(recSide,'both')
     %% Load in csv sheet
     this_ca_data = readtable(csv_data_path);
+    if size(this_ca_data,1) < samplingPoints
+        samplingPoints = size(this_ca_data,1);
+    end
     %% Organize data in struct from csv file
     ca_data.time      = this_ca_data.TimeStamp(1:samplingPoints);
     ca_data.chan1_ref = this_ca_data.CH1_410(end-samplingPoints+1:end);
@@ -46,6 +57,9 @@ if strcmp(recSide,'both')
 elseif strcmp(recSide,'left')
     %% Load in csv sheet
     this_ca_data = readtable(csv_data_path);
+    if size(this_ca_data,1) < samplingPoints
+        samplingPoints = size(this_ca_data,1);
+    end
     %% Organize data in struct from csv file
     ca_data.time      = this_ca_data.TimeStamp(1:samplingPoints);
     ca_data.chan1_ref = this_ca_data.CH2_410(end-samplingPoints+1:end);
@@ -57,6 +71,9 @@ elseif strcmp(recSide,'left')
 elseif strcmp(recSide,'right')
     %% Load in csv sheet
     this_ca_data = readtable(csv_data_path);
+    if size(this_ca_data,1) < samplingPoints
+        samplingPoints = size(this_ca_data,1);
+    end
     %% Organize data in struct from csv file
     ca_data.time      = this_ca_data.TimeStamp(1:samplingPoints);
     ca_data.chan2_ref = this_ca_data.CH2_410(end-samplingPoints+1:end);
