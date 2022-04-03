@@ -24,7 +24,7 @@ function getBoxPlots_CaEvents_all(MONTHS, INDICATOR_FOLDER1, INDICATOR_FOLDER2)
 
 BASEPATH = 'C:\Users\rcbul\OneDrive - University of North Carolina at Chapel Hill\Song_Lab\';
 ANALYZED_DATA= [BASEPATH 'Analyzed_Data\'];
-
+FIGURES = [BASEPATH 'Figures\'];
 
 for imonth = 1:length(MONTHS)
     thisMonth = MONTHS{imonth};
@@ -41,22 +41,22 @@ for imonth = 1:length(MONTHS)
     
     %% Load Group Events
     %indicator 1
-     load(CCK_EVENT_BL1, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
-            CCK_BL_largeEvents = largeGroupEvents;
-            CCK_BL_superEvents = superGroupEvents;
-            CCK_BL_smallEvents = smallGroupEvents;
-     load(CCK_EVENT_CNO1, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
-            CCK_CNO_largeEvents = largeGroupEvents;
-            CCK_CNO_superEvents = superGroupEvents;
-            CCK_CNO_smallEvents = smallGroupEvents;
-     load(CCKAD_EVENT_BL1, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
-            CCKAD_BL_largeEvents = largeGroupEvents;
-            CCKAD_BL_superEvents = superGroupEvents;
-            CCKAD_BL_smallEvents = smallGroupEvents;
-     load(CCKAD_EVENT_CNO1, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
-            CCKAD_CNO_largeEvents = largeGroupEvents;
-            CCKAD_CNO_superEvents = superGroupEvents;
-            CCKAD_CNO_smallEvents = smallGroupEvents;
+    load(CCK_EVENT_BL1, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
+    CCK_BL_largeEvents = largeGroupEvents;
+    CCK_BL_superEvents = superGroupEvents;
+    CCK_BL_smallEvents = smallGroupEvents;
+    load(CCK_EVENT_CNO1, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
+    CCK_CNO_largeEvents = largeGroupEvents;
+    CCK_CNO_superEvents = superGroupEvents;
+    CCK_CNO_smallEvents = smallGroupEvents;
+    load(CCKAD_EVENT_BL1, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
+    CCKAD_BL_largeEvents = largeGroupEvents;
+    CCKAD_BL_superEvents = superGroupEvents;
+    CCKAD_BL_smallEvents = smallGroupEvents;
+    load(CCKAD_EVENT_CNO1, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
+    CCKAD_CNO_largeEvents = largeGroupEvents;
+    CCKAD_CNO_superEvents = superGroupEvents;
+    CCKAD_CNO_smallEvents = smallGroupEvents;
     %indicator 2
     load(CCK_EVENT_BL2, 'largeGroupEvents','superGroupEvents','smallGroupEvents');
     numSessions = size(largeGroupEvents,2);
@@ -99,24 +99,24 @@ for imonth = 1:length(MONTHS)
     Gl_CCKAD_CNO_smallEvents = smallGroupEvents(chan2_idx);
     Gl_CCKAD_CNO_superEvents = superGroupEvents(chan2_idx);
     
-   %% Restructure into all CCK vs 1/2 astrocytes
-            ALL_CCK_BL_largeEvents = [CCK_BL_largeEvents IN_CCK_BL_largeEvents];
-            ALL_CCK_BL_superEvents = [CCK_BL_superEvents IN_CCK_BL_superEvents];
-            ALL_CCK_BL_smallEvents = [CCK_BL_smallEvents IN_CCK_BL_smallEvents];
-            
-            ALL_CCK_CNO_largeEvents = [CCK_CNO_largeEvents IN_CCK_CNO_largeEvents];
-            ALL_CCK_CNO_superEvents = [CCK_CNO_superEvents IN_CCK_CNO_largeEvents];
-            ALL_CCK_CNO_smallEvents = [CCK_CNO_smallEvents IN_CCK_CNO_largeEvents];
-            
-            ALL_CCKAD_BL_largeEvents = [CCKAD_BL_largeEvents IN_CCKAD_BL_largeEvents];
-            ALL_CCKAD_BL_superEvents = [CCKAD_BL_superEvents IN_CCKAD_BL_superEvents];
-            ALL_CCKAD_BL_smallEvents = [CCKAD_BL_smallEvents IN_CCKAD_BL_smallEvents];
-            
-            ALL_CCKAD_CNO_largeEvents = [CCKAD_CNO_largeEvents IN_CCKAD_CNO_largeEvents];
-            ALL_CCKAD_CNO_superEvents = [CCKAD_CNO_superEvents IN_CCKAD_CNO_superEvents];
-            ALL_CCKAD_CNO_smallEvents = [CCKAD_CNO_smallEvents IN_CCKAD_CNO_smallEvents];
-   
-   %%%%%%%%%%%%%% INDICATOR 1 %%%%%%%%%%%%%%%%%%%%%
+    %% Restructure into all CCK vs 1/2 astrocytes
+    ALL_CCK_BL_largeEvents = [CCK_BL_largeEvents IN_CCK_BL_largeEvents];
+    ALL_CCK_BL_superEvents = [CCK_BL_superEvents IN_CCK_BL_superEvents];
+    ALL_CCK_BL_smallEvents = [CCK_BL_smallEvents IN_CCK_BL_smallEvents];
+    
+    ALL_CCK_CNO_largeEvents = [CCK_CNO_largeEvents IN_CCK_CNO_largeEvents];
+    ALL_CCK_CNO_superEvents = [CCK_CNO_superEvents IN_CCK_CNO_largeEvents];
+    ALL_CCK_CNO_smallEvents = [CCK_CNO_smallEvents IN_CCK_CNO_largeEvents];
+    
+    ALL_CCKAD_BL_largeEvents = [CCKAD_BL_largeEvents IN_CCKAD_BL_largeEvents];
+    ALL_CCKAD_BL_superEvents = [CCKAD_BL_superEvents IN_CCKAD_BL_superEvents];
+    ALL_CCKAD_BL_smallEvents = [CCKAD_BL_smallEvents IN_CCKAD_BL_smallEvents];
+    
+    ALL_CCKAD_CNO_largeEvents = [CCKAD_CNO_largeEvents IN_CCKAD_CNO_largeEvents];
+    ALL_CCKAD_CNO_superEvents = [CCKAD_CNO_superEvents IN_CCKAD_CNO_superEvents];
+    ALL_CCKAD_CNO_smallEvents = [CCKAD_CNO_smallEvents IN_CCKAD_CNO_smallEvents];
+    
+    %%%%%%%%%%%%%% INDICATOR 1 %%%%%%%%%%%%%%%%%%%%%
     %% Color Map
     colorMap(1,:) = [0 0 1];
     colorMap(2,:) = [1 0 0];
@@ -159,8 +159,8 @@ for imonth = 1:length(MONTHS)
         end
     end
     %% One big plot super events
-    figure;
-    sgtitle({[thisMonth ': super Calcium Events CCK vs CCKAD'],' '});
+    supFig = figure;
+    sgtitle({[thisMonth ': Super Calcium Events'],' '});
     %% Plot time Freq
     timeFreq(:,1) = vertcat(ALL_CCK_BL_superEvents.timeFreq)';
     timeFreq(:,2) = vertcat(ALL_CCK_CNO_superEvents.timeFreq)';
@@ -231,6 +231,30 @@ for imonth = 1:length(MONTHS)
         plot([3 4], [ALL_CCKAD_BL_superEvents(i).timeFreq ALL_CCKAD_CNO_superEvents(i).timeFreq],'Color',[0 0 0]+.8);
     end
     legend([lg1,lg2]);
+    %ttest CCK BL vs CNO
+    CCK_temp1 = vertcat(ALL_CCK_BL_superEvents.timeFreq);
+    CCK_temp1 = CCK_temp1';
+    CCK_temp2 = vertcat(ALL_CCK_CNO_superEvents.timeFreq);
+    CCK_temp2 = CCK_temp2';
+    [~,p1]= ttest(CCK_temp1,CCK_temp2);
+    % ttest CCKAD BL vs CNO
+    CCK_temp3 = vertcat(ALL_CCKAD_BL_superEvents.timeFreq);
+    CCK_temp3 = CCK_temp3';
+    CCK_temp4 = vertcat(ALL_CCKAD_CNO_superEvents.timeFreq);
+    CCK_temp4 = CCK_temp4';
+    [~,p2]= ttest(CCK_temp3,CCK_temp4);
+    
+    XTickString{1} = ['$$\begin{array}{c}' ...
+        'CCK' '\\'...
+        'p=' num2str(round(p1,3)) '\\'...
+        '\end{array}$$'];
+    XTickString{2} = ['$$\begin{array}{c}' ...
+        'CCKAD' '\\'...
+        'p=' num2str(round(p2,3)) '\\'...
+        '\end{array}$$'];
+    x=[1.5 3.5];
+    set(gca,'xtick',x,'XTickLabel',XTickString,'TickLabelInterpreter','latex');
+    set (gca, 'FontName', 'Arial'); 
     %% auc
     auc(:,1) = vertcat(ALL_CCK_BL_superEvents.auc)';
     auc(:,2) = vertcat(ALL_CCK_CNO_superEvents.auc)';
@@ -301,10 +325,38 @@ for imonth = 1:length(MONTHS)
     end
     
     legend([lg1,lg2]);
+     %ttest CCK BL vs CNO
+    CCK_temp1 = vertcat(ALL_CCK_BL_superEvents.auc);
+    CCK_temp1 = CCK_temp1';
+    CCK_temp2 = vertcat(ALL_CCK_CNO_superEvents.auc);
+    CCK_temp2 = CCK_temp2';
+    [~,p1]= ttest(CCK_temp1,CCK_temp2);
+    % ttest CCKAD BL vs CNO
+    CCK_temp3 = vertcat(ALL_CCKAD_BL_superEvents.auc);
+    CCK_temp3 = CCK_temp3';
+    CCK_temp4 = vertcat(ALL_CCKAD_CNO_superEvents.auc);
+    CCK_temp4 = CCK_temp4';
+    [~,p2]= ttest(CCK_temp3,CCK_temp4);
+    
+    XTickString{1} = ['$$\begin{array}{c}' ...
+        'CCK' '\\'...
+        'p=' num2str(round(p1,3)) '\\'...
+        '\end{array}$$'];
+    XTickString{2} = ['$$\begin{array}{c}' ...
+        'CCKAD' '\\'...
+        'p=' num2str(round(p2,3)) '\\'...
+        '\end{array}$$'];
+    x=[1.5 3.5];
+    set(gca,'xtick',x,'XTickLabel',XTickString,'TickLabelInterpreter','latex');
+    
+    
+    
+    savefig([FIGURES thisMonth '_Boxplot_allEvents_Super.fig']);
+    saveas(supFig,[FIGURES thisMonth '_Boxplot_allEvents_Super.png']);
     clear timeFreq timeFreq2 ptFreq ct amp auc auc2;
     %% One big plot lareg events
-    figure;
-    sgtitle({[thisMonth ': Large Calcium Events CCK vs CCKAD'],' '});
+    largeFig = figure;
+    sgtitle({[thisMonth ': Large Calcium Events'],' '});
     %% Plot time Freq
     timeFreq(:,1) = vertcat(ALL_CCK_BL_largeEvents.timeFreq)';
     timeFreq(:,2) = vertcat(ALL_CCK_CNO_largeEvents.timeFreq)';
@@ -375,6 +427,32 @@ for imonth = 1:length(MONTHS)
         plot([3 4], [ALL_CCKAD_BL_largeEvents(i).timeFreq ALL_CCKAD_CNO_largeEvents(i).timeFreq],'Color',[0 0 0]+.8);
     end
     legend([lg1,lg2]);
+    
+     %ttest CCK BL vs CNO
+    CCK_temp1 = vertcat(ALL_CCK_BL_largeEvents.timeFreq);
+    CCK_temp1 = CCK_temp1';
+    CCK_temp2 = vertcat(ALL_CCK_CNO_largeEvents.timeFreq);
+    CCK_temp2 = CCK_temp2';
+    [~,p1]= ttest(CCK_temp1,CCK_temp2);
+    % ttest CCKAD BL vs CNO
+    CCK_temp3 = vertcat(ALL_CCKAD_BL_largeEvents.timeFreq);
+    CCK_temp3 = CCK_temp3';
+    CCK_temp4 = vertcat(ALL_CCKAD_CNO_largeEvents.timeFreq);
+    CCK_temp4 = CCK_temp4';
+    [~,p2]= ttest(CCK_temp3,CCK_temp4);
+    
+    XTickString{1} = ['$$\begin{array}{c}' ...
+        'CCK' '\\'...
+        'p=' num2str(round(p1,3)) '\\'...
+        '\end{array}$$'];
+    XTickString{2} = ['$$\begin{array}{c}' ...
+        'CCKAD' '\\'...
+        'p=' num2str(round(p2,3)) '\\'...
+        '\end{array}$$'];
+    x=[1.5 3.5];
+    set(gca,'xtick',x,'XTickLabel',XTickString,'TickLabelInterpreter','latex');
+    
+    
     %% auc
     auc(:,1) = vertcat(ALL_CCK_BL_largeEvents.auc)';
     auc(:,2) = vertcat(ALL_CCK_CNO_largeEvents.auc)';
@@ -445,10 +523,37 @@ for imonth = 1:length(MONTHS)
     end
     
     legend([lg1,lg2]);
+    
+     %ttest CCK BL vs CNO
+    CCK_temp1 = vertcat(ALL_CCK_BL_largeEvents.auc);
+    CCK_temp1 = CCK_temp1';
+    CCK_temp2 = vertcat(ALL_CCK_CNO_largeEvents.auc);
+    CCK_temp2 = CCK_temp2';
+    [~,p1]= ttest(CCK_temp1,CCK_temp2);
+    % ttest CCKAD BL vs CNO
+    CCK_temp3 = vertcat(ALL_CCKAD_BL_largeEvents.auc);
+    CCK_temp3 = CCK_temp3';
+    CCK_temp4 = vertcat(ALL_CCKAD_CNO_largeEvents.auc);
+    CCK_temp4 = CCK_temp4';
+    [~,p2]= ttest(CCK_temp3,CCK_temp4);
+    
+    XTickString{1} = ['$$\begin{array}{c}' ...
+        'CCK' '\\'...
+        'p=' num2str(round(p1,3)) '\\'...
+        '\end{array}$$'];
+    XTickString{2} = ['$$\begin{array}{c}' ...
+        'CCKAD' '\\'...
+        'p=' num2str(round(p2,3)) '\\'...
+        '\end{array}$$'];
+    x=[1.5 3.5];
+    set(gca,'xtick',x,'XTickLabel',XTickString,'TickLabelInterpreter','latex');
+    
+    saveas(largeFig,[FIGURES thisMonth '_Boxplot_allEvents_Large.png']);
+    savefig([FIGURES thisMonth '_Boxplot_allEvents_Large.fig']);
     clear timeFreq timeFreq2 ptFreq ct amp auc auc2;
     %% One big plot for small events
-    figure;
-    sgtitle({[thisMonth ': Small Calcium Events CCK vs CCKAD'],' '});
+    smallFig = figure;
+    sgtitle({[thisMonth ': Small Calcium Events'],' '});
     %% Plot time Freq
     timeFreq(:,1) = vertcat(ALL_CCK_BL_smallEvents.timeFreq)';
     timeFreq(:,2) = vertcat(ALL_CCK_CNO_smallEvents.timeFreq)';
@@ -519,6 +624,30 @@ for imonth = 1:length(MONTHS)
     end
     
     legend([lg1,lg2]);
+    
+     %ttest CCK BL vs CNO
+    CCK_temp1 = vertcat(ALL_CCK_BL_smallEvents.timeFreq);
+    CCK_temp1 = CCK_temp1';
+    CCK_temp2 = vertcat(ALL_CCK_CNO_smallEvents.timeFreq);
+    CCK_temp2 = CCK_temp2';
+    [~,p1]= ttest(CCK_temp1,CCK_temp2);
+    % ttest CCKAD BL vs CNO
+    CCK_temp3 = vertcat(ALL_CCKAD_BL_smallEvents.timeFreq);
+    CCK_temp3 = CCK_temp3';
+    CCK_temp4 = vertcat(ALL_CCKAD_CNO_smallEvents.timeFreq);
+    CCK_temp4 = CCK_temp4';
+    [~,p2]= ttest(CCK_temp3,CCK_temp4);
+    
+    XTickString{1} = ['$$\begin{array}{c}' ...
+        'CCK' '\\'...
+        'p=' num2str(round(p1,3)) '\\'...
+        '\end{array}$$'];
+    XTickString{2} = ['$$\begin{array}{c}' ...
+        'CCKAD' '\\'...
+        'p=' num2str(round(p2,3)) '\\'...
+        '\end{array}$$'];
+    x=[1.5 3.5];
+    set(gca,'xtick',x,'XTickLabel',XTickString,'TickLabelInterpreter','latex');
     %% auc
     auc(:,1) = vertcat(ALL_CCK_BL_smallEvents.auc)';
     auc(:,2) = vertcat(ALL_CCK_CNO_smallEvents.auc)';
@@ -589,10 +718,37 @@ for imonth = 1:length(MONTHS)
     end
     
     legend([lg1,lg2]);
+    
+     %ttest CCK BL vs CNO
+    CCK_temp1 = vertcat(ALL_CCK_BL_smallEvents.auc);
+    CCK_temp1 = CCK_temp1';
+    CCK_temp2 = vertcat(ALL_CCK_CNO_smallEvents.auc);
+    CCK_temp2 = CCK_temp2';
+    [~,p1]= ttest(CCK_temp1,CCK_temp2);
+    % ttest CCKAD BL vs CNO
+    CCK_temp3 = vertcat(ALL_CCKAD_BL_smallEvents.auc);
+    CCK_temp3 = CCK_temp3';
+    CCK_temp4 = vertcat(ALL_CCKAD_CNO_smallEvents.auc);
+    CCK_temp4 = CCK_temp4';
+    [~,p2]= ttest(CCK_temp3,CCK_temp4);
+    
+    XTickString{1} = ['$$\begin{array}{c}' ...
+        'CCK' '\\'...
+        'p=' num2str(round(p1,3)) '\\'...
+        '\end{array}$$'];
+    XTickString{2} = ['$$\begin{array}{c}' ...
+        'CCKAD' '\\'...
+        'p=' num2str(round(p2,3)) '\\'...
+        '\end{array}$$'];
+    x=[1.5 3.5];
+    set(gca,'xtick',x,'XTickLabel',XTickString,'TickLabelInterpreter','latex');
+    
+    saveas(smallFig,[FIGURES thisMonth '_Boxplot_allEvents_Small.png']);
+    savefig([FIGURES thisMonth '_Boxplot_allEvents_Small.fig']);
     clear timeFreq timeFreq2 ptFreq ct amp auc auc2;
     %%
     %%%%%%%%%%%%% INDICATOR 2 %%%%%%%%%%%%%%%%%%%%%
-        %% Color Map
+    %% Color Map
     colorMap(1,:) = [0 0 1];
     colorMap(2,:) = [1 0 0];
     colorMap(3,:) = [0 0 1];
@@ -634,8 +790,8 @@ for imonth = 1:length(MONTHS)
         end
     end
     %% One big plot super events
-    figure;
-    sgtitle({[thisMonth ': super Calcium Events Astrocytes: CCK vs CCKAD'],' '});
+    superFig2 = figure;
+    sgtitle({[thisMonth ': Super Calcium Events Astrocytes'],' '});
     %% Plot time Freq
     timeFreq(:,1) = vertcat(Gl_CCK_BL_superEvents.timeFreq)';
     timeFreq(:,2) = vertcat(Gl_CCK_CNO_superEvents.timeFreq)';
@@ -706,6 +862,30 @@ for imonth = 1:length(MONTHS)
         plot([3 4], [Gl_CCKAD_BL_superEvents(i).timeFreq Gl_CCKAD_CNO_superEvents(i).timeFreq],'Color',[0 0 0]+.8);
     end
     legend([lg1,lg2]);
+    
+     %ttest CCK BL vs CNO
+    CCK_temp1 = vertcat(Gl_CCK_BL_superEvents.timeFreq);
+    CCK_temp1 = CCK_temp1';
+    CCK_temp2 = vertcat(Gl_CCK_CNO_superEvents.timeFreq);
+    CCK_temp2 = CCK_temp2';
+    [~,p1]= ttest(CCK_temp1,CCK_temp2);
+    % ttest CCKAD BL vs CNO
+    CCK_temp3 = vertcat(Gl_CCKAD_BL_superEvents.timeFreq);
+    CCK_temp3 = CCK_temp3';
+    CCK_temp4 = vertcat(Gl_CCKAD_CNO_superEvents.timeFreq);
+    CCK_temp4 = CCK_temp4';
+    [~,p2]= ttest(CCK_temp3,CCK_temp4);
+    
+    XTickString{1} = ['$$\begin{array}{c}' ...
+        'CCK' '\\'...
+        'p=' num2str(round(p1,3)) '\\'...
+        '\end{array}$$'];
+    XTickString{2} = ['$$\begin{array}{c}' ...
+        'CCKAD' '\\'...
+        'p=' num2str(round(p2,3)) '\\'...
+        '\end{array}$$'];
+    x=[1.5 3.5];
+    set(gca,'xtick',x,'XTickLabel',XTickString,'TickLabelInterpreter','latex');
     %% auc
     auc(:,1) = vertcat(Gl_CCK_BL_superEvents.auc)';
     auc(:,2) = vertcat(Gl_CCK_CNO_superEvents.auc)';
@@ -776,10 +956,36 @@ for imonth = 1:length(MONTHS)
     end
     
     legend([lg1,lg2]);
+    
+        %ttest CCK BL vs CNO
+    CCK_temp1 = vertcat(Gl_CCK_BL_superEvents.auc);
+    CCK_temp1 = CCK_temp1';
+    CCK_temp2 = vertcat(Gl_CCK_CNO_superEvents.auc);
+    CCK_temp2 = CCK_temp2';
+    [~,p1]= ttest(CCK_temp1,CCK_temp2);
+    % ttest CCKAD BL vs CNO
+    CCK_temp3 = vertcat(Gl_CCKAD_BL_superEvents.auc);
+    CCK_temp3 = CCK_temp3';
+    CCK_temp4 = vertcat(Gl_CCKAD_CNO_superEvents.auc);
+    CCK_temp4 = CCK_temp4';
+    [~,p2]= ttest(CCK_temp3,CCK_temp4);
+    
+    XTickString{1} = ['$$\begin{array}{c}' ...
+        'CCK' '\\'...
+        'p=' num2str(round(p1,3)) '\\'...
+        '\end{array}$$'];
+    XTickString{2} = ['$$\begin{array}{c}' ...
+        'CCKAD' '\\'...
+        'p=' num2str(round(p2,3)) '\\'...
+        '\end{array}$$'];
+    x=[1.5 3.5];
+    set(gca,'xtick',x,'XTickLabel',XTickString,'TickLabelInterpreter','latex');
+    saveas(superFig2,[FIGURES thisMonth '_Boxplot_GliaEvents_Super.png']);
+    savefig([FIGURES thisMonth '_Boxplot_GliaEvents_Super.fig']);
     clear timeFreq ptFreq ct amp auc;
     %% One big plot lareg events
-    figure;
-    sgtitle({[thisMonth ': Large Calcium Events Astrocytes: CCK vs CCKAD'],' '});
+    largeFig2 = figure;
+    sgtitle({[thisMonth ': Large Calcium Events Astrocytes'],' '});
     %% Plot time Freq
     timeFreq(:,1) = vertcat(Gl_CCK_BL_largeEvents.timeFreq)';
     timeFreq(:,2) = vertcat(Gl_CCK_CNO_largeEvents.timeFreq)';
@@ -850,6 +1056,29 @@ for imonth = 1:length(MONTHS)
         plot([3 4], [Gl_CCKAD_BL_largeEvents(i).timeFreq Gl_CCKAD_CNO_largeEvents(i).timeFreq],'Color',[0 0 0]+.8);
     end
     legend([lg1,lg2]);
+        %ttest CCK BL vs CNO
+    CCK_temp1 = vertcat(Gl_CCK_BL_largeEvents.timeFreq);
+    CCK_temp1 = CCK_temp1';
+    CCK_temp2 = vertcat(Gl_CCK_CNO_largeEvents.timeFreq);
+    CCK_temp2 = CCK_temp2';
+    [~,p1]= ttest(CCK_temp1,CCK_temp2);
+    % ttest CCKAD BL vs CNO
+    CCK_temp3 = vertcat(Gl_CCKAD_BL_largeEvents.timeFreq);
+    CCK_temp3 = CCK_temp3';
+    CCK_temp4 = vertcat(Gl_CCKAD_CNO_largeEvents.timeFreq);
+    CCK_temp4 = CCK_temp4';
+    [~,p2]= ttest(CCK_temp3,CCK_temp4);
+    
+    XTickString{1} = ['$$\begin{array}{c}' ...
+        'CCK' '\\'...
+        'p=' num2str(round(p1,3)) '\\'...
+        '\end{array}$$'];
+    XTickString{2} = ['$$\begin{array}{c}' ...
+        'CCKAD' '\\'...
+        'p=' num2str(round(p2,3)) '\\'...
+        '\end{array}$$'];
+    x=[1.5 3.5];
+    set(gca,'xtick',x,'XTickLabel',XTickString,'TickLabelInterpreter','latex');
     %% auc
     auc(:,1) = vertcat(Gl_CCK_BL_largeEvents.auc)';
     auc(:,2) = vertcat(Gl_CCK_CNO_largeEvents.auc)';
@@ -920,10 +1149,36 @@ for imonth = 1:length(MONTHS)
     end
     
     legend([lg1,lg2]);
+        %ttest CCK BL vs CNO
+    CCK_temp1 = vertcat(Gl_CCK_BL_largeEvents.auc);
+    CCK_temp1 = CCK_temp1';
+    CCK_temp2 = vertcat(Gl_CCK_CNO_largeEvents.auc);
+    CCK_temp2 = CCK_temp2';
+    [~,p1]= ttest(CCK_temp1,CCK_temp2);
+    % ttest CCKAD BL vs CNO
+    CCK_temp3 = vertcat(Gl_CCKAD_BL_largeEvents.auc);
+    CCK_temp3 = CCK_temp3';
+    CCK_temp4 = vertcat(Gl_CCKAD_CNO_largeEvents.auc);
+    CCK_temp4 = CCK_temp4';
+    [~,p2]= ttest(CCK_temp3,CCK_temp4);
+    
+    XTickString{1} = ['$$\begin{array}{c}' ...
+        'CCK' '\\'...
+        'p=' num2str(round(p1,3)) '\\'...
+        '\end{array}$$'];
+    XTickString{2} = ['$$\begin{array}{c}' ...
+        'CCKAD' '\\'...
+        'p=' num2str(round(p2,3)) '\\'...
+        '\end{array}$$'];
+    x=[1.5 3.5];
+    set(gca,'xtick',x,'XTickLabel',XTickString,'TickLabelInterpreter','latex');
+    
+    saveas(largeFig2,[FIGURES thisMonth '_Boxplot_GliaEvents_Large.png']);
+    savefig([FIGURES thisMonth '_Boxplot_GliaEvents_Large.fig']);
     clear timeFreq ptFreq ct amp auc;
     %% One big plot for small events
-    figure;
-    sgtitle({[thisMonth ': Small Calcium Events Astrocytes: CCK vs CCKAD'],' '});
+    smallFig2 = figure;
+    sgtitle({[thisMonth ': Small Calcium Events Astrocytes'],' '});
     %% Plot time Freq
     timeFreq(:,1) = vertcat(Gl_CCK_BL_smallEvents.timeFreq)';
     timeFreq(:,2) = vertcat(Gl_CCK_CNO_smallEvents.timeFreq)';
@@ -994,6 +1249,29 @@ for imonth = 1:length(MONTHS)
     end
     
     legend([lg1,lg2]);
+        %ttest CCK BL vs CNO
+    CCK_temp1 = vertcat(Gl_CCK_BL_smallEvents.timeFreq);
+    CCK_temp1 = CCK_temp1';
+    CCK_temp2 = vertcat(Gl_CCK_CNO_smallEvents.timeFreq);
+    CCK_temp2 = CCK_temp2';
+    [~,p1]= ttest(CCK_temp1,CCK_temp2);
+    % ttest CCKAD BL vs CNO
+    CCK_temp3 = vertcat(Gl_CCKAD_BL_smallEvents.timeFreq);
+    CCK_temp3 = CCK_temp3';
+    CCK_temp4 = vertcat(Gl_CCKAD_CNO_smallEvents.timeFreq);
+    CCK_temp4 = CCK_temp4';
+    [~,p2]= ttest(CCK_temp3,CCK_temp4);
+    
+    XTickString{1} = ['$$\begin{array}{c}' ...
+        'CCK' '\\'...
+        'p=' num2str(round(p1,3)) '\\'...
+        '\end{array}$$'];
+    XTickString{2} = ['$$\begin{array}{c}' ...
+        'CCKAD' '\\'...
+        'p=' num2str(round(p2,3)) '\\'...
+        '\end{array}$$'];
+    x=[1.5 3.5];
+    set(gca,'xtick',x,'XTickLabel',XTickString,'TickLabelInterpreter','latex');
     %% auc
     auc(:,1) = vertcat(Gl_CCK_BL_smallEvents.auc)';
     auc(:,2) = vertcat(Gl_CCK_CNO_smallEvents.auc)';
@@ -1064,6 +1342,32 @@ for imonth = 1:length(MONTHS)
     end
     
     legend([lg1,lg2]);
+    
+        %ttest CCK BL vs CNO
+    CCK_temp1 = vertcat(Gl_CCK_BL_smallEvents.auc);
+    CCK_temp1 = CCK_temp1';
+    CCK_temp2 = vertcat(Gl_CCK_CNO_smallEvents.auc);
+    CCK_temp2 = CCK_temp2';
+    [~,p1]= ttest(CCK_temp1,CCK_temp2);
+    % ttest CCKAD BL vs CNO
+    CCK_temp3 = vertcat(Gl_CCKAD_BL_smallEvents.auc);
+    CCK_temp3 = CCK_temp3';
+    CCK_temp4 = vertcat(Gl_CCKAD_CNO_smallEvents.auc);
+    CCK_temp4 = CCK_temp4';
+    [~,p2]= ttest(CCK_temp3,CCK_temp4);
+    
+    XTickString{1} = ['$$\begin{array}{c}' ...
+        'CCK' '\\'...
+        'p=' num2str(round(p1,3)) '\\'...
+        '\end{array}$$'];
+    XTickString{2} = ['$$\begin{array}{c}' ...
+        'CCKAD' '\\'...
+        'p=' num2str(round(p2,3)) '\\'...
+        '\end{array}$$'];
+    x=[1.5 3.5];
+    set(gca,'xtick',x,'XTickLabel',XTickString,'TickLabelInterpreter','latex');
+    saveas(smallFig2,[FIGURES thisMonth '_Boxplot_GliaEvents_Small.png']);
+    savefig([FIGURES thisMonth '_Boxplot_GliaEvents_Small.fig']);
     clear timeFreq ptFreq ct amp auc;
 end %month
 

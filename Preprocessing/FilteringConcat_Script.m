@@ -126,37 +126,43 @@ for imonth = 1:length(MONTHS)
             sgtitle({[thisMonth ': BL + CNO (' strrep(titleSession,'_',' ') ')'],...
                 [filter_type ' pass filt, order: ' num2str(IIR_order) ', cutoff freq: ' num2str(cutoff_freq)]});
             % for channel 1
-            subplot(4,1,1);
+            subplot(2,1,1);
             plot(concat_data.chan1_time, concat_data.chan1,'r');
             hold on;
+            plot(concat_data.chan1_time, concat_data.chan1_filt','b');
+          
             title('Channel 1');
+            legend({'Raw','Filtered'});
             box off;
             ylabel('\Delta F/F (%)');
             xlabel('Time (ms)');
             % for channel 2
-            subplot(4,1,2);
+            subplot(2,1,2);
             plot(concat_data.chan2_time, concat_data.chan2,'r');
             hold on;
+            plot(concat_data.chan2_time, concat_data.chan2_filt','b');
+          
             title('Channel 2');
             box off;
             ylabel('\Delta F/F (%)');
             xlabel('Time (ms)');
-            % channel 1 filtered
-            subplot(4,1,3);
-            plot(concat_data.chan1_time, concat_data.chan1_filt','b');
-            hold on;
-            title('Channel 1 Filtered');
-            box off;
-            ylabel('\Delta F/F (%)');
-            xlabel('Time (ms)');
-            % for channel 2 filtered
-            subplot(4,1,4);
-            plot(concat_data.chan2_time, concat_data.chan2_filt','b');
-            hold on;
-            title('Channel 2 Filtered');
-            box off;
-            ylabel('\Delta F/F (%)');
-            xlabel('Time (ms)');
+            legend({'Raw','Filtered'});
+%             % channel 1 filtered
+%             subplot(4,1,3);
+%             plot(concat_data.chan1_time, concat_data.chan1_filt','b');
+%             hold on;
+%             title('Channel 1 Filtered');
+%             box off;
+%             ylabel('\Delta F/F (%)');
+%             xlabel('Time (ms)');
+%             % for channel 2 filtered
+%             subplot(4,1,4);
+%             plot(concat_data.chan2_time, concat_data.chan2_filt','b');
+%             hold on;
+%             title('Channel 2 Filtered');
+%             box off;
+%             ylabel('\Delta F/F (%)');
+%             xlabel('Time (ms)');
             %% Save filtered data - BASELINE
             load(THIS_SESSION_BL);
             ca_data.chan1_filt = concat_data.chan1_filt(1:length(ca_data.chan1_time));

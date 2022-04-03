@@ -30,7 +30,7 @@ MODELS           = {'CCK','CCKAD'}; %WT and AD models
 EXPER_CONDITIONS = {'baseline','CNO'};
 INDICATOR_FOLDER1 =  'hM3D_DioGC\'; 
 INDICATOR_FOLDER2 = 'L_hM3D_DioGC_R_hM3D_GFAPGC\';
-MONTHS           = {'5mon'};
+MONTHS           = {'4mon'};
 
 %% Set Paths
 BASEPATH = 'C:\Users\rcbul\OneDrive - University of North Carolina at Chapel Hill\Song_Lab\';
@@ -45,9 +45,9 @@ addpath(genpath(ANALYZED_DATA));
 
 SetGraphDefaults;
 %% Run preprocessing
-samplingRate = 10;
-%plotDeltaF(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER, samplingRate)
-% Preprocessing_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER1, samplingRate);
+ samplingRate = 10;
+% %plotDeltaF(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER, samplingRate)
+ %Preprocessing_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER1, samplingRate);
 % Preprocessing_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER2, samplingRate);
 % %% Run Filtering
 % % Filtering_Script; OR FilteringConcat_Script
@@ -55,16 +55,16 @@ samplingRate = 10;
 % FilteringConcat_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER1);
 % FilteringConcat_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER2);
 % %% Get std dev and mean for each animal
-% GetStdDev_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER1);
+ GetStdDev_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER1);
 % GetStdDev_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER2);
-% %% Get Events
-% FindEvents_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER1);
+% %% Get Events\
+%FindEvents_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER1);
 % FindEvents_Script(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER2);
-% %% Powerspectrum
-%getPowerSpectrum(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER);
+%% Powerspectrum
+%getPowerSpectrum(MODELS,EXPER_CONDITIONS,MONTHS, INDICATOR_FOLDER1);
 %% Get boxplots of CCK cells
 
-getBoxPlots_CaEvents_all(MONTHS,INDICATOR_FOLDER1, INDICATOR_FOLDER2);
+%getBoxPlots_CaEvents_all(MONTHS,INDICATOR_FOLDER1, INDICATOR_FOLDER2);
 
 % 
 % if strcmp(INDICATOR_FOLDER,'hM3D_DioGC\')
